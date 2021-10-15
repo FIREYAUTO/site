@@ -20,9 +20,12 @@ body {
   float:left;
   width:75px;
   height:50px;
-  color:#ffffff;
+  list-style-type:none;
 }
-
+#nav-buttons>li>a{
+  color:#ffffff;
+  font-size:16px;
+}
 #nav-buttons>li>a:active{
   float:left;
   color:#ffffff;
