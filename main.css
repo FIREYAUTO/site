@@ -11,3 +11,20 @@ body {
   width:100%;
   height:50px;
 }
+#nav-buttons {
+  display:inline;
+  padding:0;
+  margin:0;
+}
+#nav-buttons>li{
+  float:left;
+  width:75px;
+  height:50px;
+  color:#ffffff;
+}
+
+#nav-buttons>li>a:active{
+  float:left;
+  color:#ffffff;
+  background:#1a5ca8;
+}
