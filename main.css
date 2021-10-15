@@ -1,0 +1,13 @@
+body {
+  padding:0;
+  margin:0;
+}
+.nav {
+  background:#217fca;
+  position:sticky;
+  overflow:hidden;
+  left:0;
+  top:0;
+  width:100%;
+  height:50px;
+}
