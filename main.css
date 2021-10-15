@@ -26,9 +26,15 @@ body {
   color:#ffffff;
   font-size:16px;
   text-align:center;
+  display:block;
+  padding:10px;
+  text-decoration: none;
 }
 #nav-buttons>li>a:active{
   float:left;
   color:#ffffff;
   background:#1a5ca8;
+}
+#nav-buttons>li>a:hover {
+  background:#3d8fef;
 }
