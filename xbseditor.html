@@ -1,0 +1,672 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+h3 {
+	font-family: 'Space Mono', monospace;
+	font-size:15px;
+}
+.notes{
+font-size:12px;
+font-family: 'Space Mono', monospace;
+}
+.code {
+	font-family: 'Space Mono', monospace;
+}
+#codebox {
+	display:inline-block;
+	width:500px;
+    height:200px;
+    font-family: 'Space Mono', monospace;
+    font-size:12px;
+    tab-size:4;
+    overflow:auto;
+}
+button {
+	width:100px;
+    margin-right:10px;
+    margin-top:5px;
+}
+#output {
+	border-left:5px solid #dddddd;
+    padding-left:10px;
+    background:#eeeeee;
+    font-family: 'Space Mono', monospace;
+    font-size:12px;
+}
+#saves {
+	display:inline-block;
+	background:#ffffff;
+    width:200px;
+    height:200px;
+    overflow:auto;
+    font-family: 'Space Mono', monospace;
+    border:1px solid #6f6f6f;
+    border-radius:3px;
+}
+.save {
+	display:inline-block;
+	width:100%;
+    height:20px;
+    font-size:12px;
+    background:#f5f5f5;
+}
+.savebtn {
+	margin-top:0;
+	display:inline-block;
+    font-family: 'Space Mono', monospace;
+    width:55px;
+    margin-left:0px;
+    margin-right:0px;
+    font-size:11px;
+    height:15px;
+    line-height:0;
+}
+
+#objectlog,.objectlog {
+	border-left:5px solid #dfdfdf;
+    padding-left:20px;
+    font-family: 'Space Mono', monospace;
+}
+.objectlog-p {
+	margin-top:0;
+    margin-bottom:0;
+    color:#7f7f7f;
+}
+.objectlog-btn {
+	font-size:12px;
+    margin-right:5px;
+    width:50px;
+    background:#f3f3f3;
+    border-radius:5px;
+    border:1px solid #f3f3f3;
+    font-family: 'Space Mono', monospace;
+}
+
+.quote{
+	border-left:5px solid #dddddd;
+    padding-left:10px;
+}
+
+.codeblock-single {
+	border-radius:5px;
+    padding:3px;
+    font-size:12px;
+    background:#eeeeee;
+}
+
+.codeblock-big {
+	border-radius:5px;
+    padding:3px;
+    font-size:12px;
+    background:#eeeeee;
+    tab-size:4;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+<h3>Code Editor</h3>
+<textarea id="codebox" placeholder="XBS Code Here" spellcheck="false"></textarea>
+<div id="saves"></div>
+<br>
+<button id="execute">Run XBS</button>
+<button id="clear">Clear Output</button>
+<input type="text" placeholder="Save Name" class="code" id="savename">
+<button id="savecode">Save Code</button>
+<button id="clearbtn">Clear</button>
+<button id="highlightbtn">Highlight</button>
+<br>
+<script src="https://raw.githubusercontent.com/FIREYAUTO/Javascript/main/Libraries/storage.js"></script>
+<script src="https://raw.githubusercontent.com/FIREYAUTO/XBS/main/languagetype.js"></script>
+<script src="https://raw.githubusercontent.com/FIREYAUTO/XBS/main/library.js"></script>
+<h3>Output</h3>
+<pre id="output"></pre>
+<div id="objectlog" class="objectlog">
+</div>
+<br>
+<div>
+<h3>Highlighted Code</h3>
+<pre class="codeblock-big" id="highlighted"></pre>
+</div>
+<div class="notes">
+	<h3>Notes</h3>
+	<p>This is the <i>official</i> <b>XBS</b> code editor</p>
+    <p>To see more information, please see <a href="https://github.com/FIREYAUTO/XBS/wiki" target="_new">XBS Wiki</a></p>
+	<p>It extends the standard XBS library. Here is what it adds:</p>
+	<div class="quote">
+		<span class="codeblock-single">require</span>
+		<div class="quote">
+			<p>This function will require a given save file if the save file has exports and is a module.</p>
+            <pre class="codeblock-big">@type="module"
+@exports={Hello="World"}</pre>
+		</div>
+        <span class="codeblock-single">clearrequires</span>
+        <div class="quote">
+        	<p>This function clears the require cache</p>
+        </div>
+        <span class="codeblock-single">quickcall</span>
+        <div class="quote">
+        	<p>This function will call the given function with the array, and will return the results as an array.</p>
+            <pre class="codeblock-big">set x = ["Hello","World"]
+quickcall(log,x);</pre>
+        </div>
+        <span class="codeblock-single">ucall</span>
+        <div class="quote">
+        	<p>This function will call the given function with the unpacked array.</p>
+            <pre class="codeblock-big">set x = ["Hello, ","world!"];
+ucall(log,x);</pre>
+        </div>
+	</div>
+    <p>This code editor uses a different version of XBS. Here, we use the <u>typed</u> version of XBS. It allows you to declare types for variables and more</p>
+    <div class="quote">
+    	<p>Typed Variables example 1</p>
+    	<pre class="codeblock-big">set x:string = "Hello, world!"; #Wouldn't error
+set y:number = "1"; #Would error</pre>
+		<p>Typed Variables example 2</p>
+        <pre class="codeblock-big">func Add(a:number,b:number):number{
+	send a+b;
+}
+
+log(Add(1,2));</pre>
+		<p>Typed Variables example 3</p>
+        <pre class="codeblock-big">set x:object = {
+	a:string="Hello",
+	b:array=[
+		1,
+		2,
+        true,
+	],
+}
+log(x.a);
+log(x.b[0]);</pre>
+    </div>
+    <p>Require Example</p>
+    <div class="quote">
+    	<span class="codeblock-single">Reverse</span>
+        <pre class="codeblock-big">@type="module"
+@exports=func(a:string):string{
+	send string.reverse(a);
+}</pre>
+		<span class="codeblock-single">Main</span>
+        <pre class="codeblock-big">set Reverse:function = require("Reverse");
+log(Reverse("Hello, world!"));</pre>
+    </div>
+    <p>Function Defaults</p>
+    <div class="quote">
+    	<p>In this version of XBS, function defaults are different from the regular way to declare them</p>
+        <span class="codeblock-single">Typed XBS (Our method)</span>
+        <pre class="codeblock-big">func add(a:number=1,b:number=2):number{
+	send a+b;
+}
+log(add(1))</pre>
+        <span class="codeblock-single">Regular XBS</span>
+        <pre class="codeblock-big">func add(a,b){
+	send a+b;
+}{a=1,b=2}
+log(add(1))</pre>
+    </div>
+    <p>Expression Parsing</p>
+    <div class="quote">
+    	<p>Another thing that is different is that typed XBS parses expressions in a new way</p>
+        <span class="codeblock-single">Typed XBS Expression</span>
+        <pre class="codeblock-big">(log|print)("Hello, world!")</pre>
+        <p>Running the code above in regular XBS will <b>not</b> work</p>
+    </div>
+    <p>Type Methods</p>
+    <div class="quote">
+    	<p>Typed XBS has custom methods for datatypes like strings and arrays</p>
+        <span class="codeblock-single">Type Method Example</span>
+        <pre class="codeblock-big">set String = "Hello, world!";
+log(String::reverse())</pre>
+        <p>Running the code above in regular XBS will <b>not</b> work</p>
+    </div>
+    <p>Switch Statements</p>
+    <div class="quote">
+    	<p>Switch statements in XBS are similar to JavaScript, but are different. We still use <span class="codeblock-single">switch</span> and <span class="codeblock-single">case</span>, but there are some differences. <span class="codeblock-single">def</span> is the default for a switch statement.</p>
+        <pre class="codeblock-big">func switchTest(x){
+	switch(x){
+		case(1){
+    		log("x is 1");
+    	}case(2){
+    		log("x is 2");
+    	}def{
+    		log("x didn't match any cases");
+    	}
+	}
+}
+
+switchTest(1);
+switchTest(2);
+switchTest(3);
+</pre>
+    </div>
+</div>
+<script>
+
+const CodeBox = document.getElementById("codebox");
+const Execute = document.getElementById("execute");
+const Output = document.getElementById("output");
+const Clear = document.getElementById("clear");
+const Requires = {};
+const SaveObject = {};
+const Saves = document.getElementById("saves");
+const LocalSaves = new LocalStorage("LocalSaves");
+const SaveCode = document.getElementById("savecode");
+const SaveName = document.getElementById("savename");
+const ClearButton = document.getElementById("clearbtn");
+
+const HighlightBtn = document.getElementById("highlightbtn");
+const HighlightPre = document.getElementById("highlighted");
+
+const NewGlobals = {
+	clearoutput:function(){
+    	let child = Output.lastElementChild;  
+    	while (child) {
+      	Output.removeChild(child); 
+      	child = Output.lastElementChild;
+    	}
+    	ObjectHandler.ClearElementChildren(ObjectHandler.ObjectLog);
+    	HighlightPre.innerHTML="";
+    },
+    getsaves:function(){
+        return Object.keys(SaveObject)
+    },
+    newsave:function(name,code){
+    	NewSave(name,code)
+    },
+    delsave:function(name){
+    	DeleteSave(name);
+    },
+    getsave:function(name){
+    	return SaveObject[name]?.Code;
+    },
+    ucall:function(callback,params){
+    	if (params instanceof Array){
+        	return callback(...params);
+        } else {
+        	return callback(params);
+        }
+    },
+}
+
+const ObjectHandler = {
+	ObjectLog:document.getElementById("objectlog"),
+    Colors:{
+    	String:"#d35d17",
+        Number:"#348def",
+        Bool:"#ff2f5a",
+        Function:"#9f9f9f",
+        FunctionName:"#ffaf32",
+        Cyclic:"#7a36ef",
+    },
+	ClearElementChildren:function(Element){
+    	let Child = Element.lastElementChild;  
+    	while (Child) {
+      		Element.removeChild(Child); 
+      		Child = Element.lastElementChild;
+    	}
+    },
+    Create:function(Tag,To,Props){
+    	let Element = document.createElement(Tag);
+        if (Props && Props instanceof Object){
+        	for(let k in Props){
+            	Element[k]=Props[k];
+            }
+        }
+        To.appendChild(Element);
+        return Element;
+    },
+    ColorWord:function(x,n){
+    	let v = x;
+        if (this.Colors.hasOwnProperty(n)){
+        	v = `<span style="color:${this.Colors[n]};">${v}</span>`;
+        }
+        return v;
+    },
+    GetKey:function(k){
+    	let s = String(k);
+        let t = typeof k;
+        if (t == "string" && isNaN(+k)){
+        	s = this.ColorWord(`"${s}"`,"String");
+        } else if ((t=="number" || !isNaN(+k))&&t!="boolean"){
+        	s = this.ColorWord(s,"Number");
+        } else if (t=="boolean"){
+        	s = this.ColorWord(s,"Bool");
+        }
+        return `[${s}]`;
+    },
+    GetValue:function(v){
+    	let s = String(v);
+        let t = typeof v;
+        if (t == "string"){
+        	s = this.ColorWord(`"${s}"`,"String");
+        } else if (t=="number"){
+        	s = this.ColorWord(s,"Number");
+        } else if (t=="boolean"){
+        	s = this.ColorWord(s,"Bool");
+        } else if (t=="function"){
+        	s = this.ColorWord(`&lt;function: ${this.ColorWord(`<b>${v.name}</b>`,"FunctionName")}&gt;`,"Function");
+        }
+        return s;
+    },
+    RecursiveLog:function(Obj,Append,Cycle){
+    	let Cyclic = Cycle;
+        if (!Cyclic){
+        	Cyclic=[];
+        } else {
+        	if (Cyclic.includes(Obj)){
+            	this.Create("p",Append,{innerHTML:this.ColorWord("&lt;Cyclic Reference&gt;","Cyclic"),className:"objectlog-p"});
+                return
+            }
+        }
+        Cyclic.push(Obj);
+        for (let k in Obj){
+        	let v = Obj[k];
+            if (typeof v == "object" && v instanceof Object){
+            	let Holder = this.Create("div",Append);
+                let Toggle = this.Create("button",Holder,{innerHTML:"Open",className:"objectlog-btn"});
+            	let Name = this.Create("span",Holder,{className:"objectlog-p"});
+            	let Div = this.Create("div",Holder,{className:"objectlog"});
+                Div.setAttribute("hidden",true);
+                Name.innerHTML = `${this.GetKey(k)} (${typeof v})`;
+                let Open = false;
+                let DidLog = false;
+                Toggle.addEventListener("mousedown",()=>{
+                	Open = !Open;
+                   	if (Open){
+                    	if (!DidLog){
+                        	DidLog=true;
+                            this.RecursiveLog(v,Div,Cyclic);
+                        }
+                    	Div.removeAttribute("hidden");
+                    } else {
+                    	Div.setAttribute("hidden",true);
+                    }
+                    Toggle.innerHTML=Open?"Close":"Open";
+                });
+                
+            } else {
+            	let Name = this.Create("p",Append,{className:"objectlog-p"});
+                Name.innerHTML = `${this.GetKey(k)} = ${this.GetValue(v)} (${typeof v})`;
+            }
+        }
+    },
+    LogObject:function(Obj){
+    	this.ClearElementChildren(this.ObjectLog);
+        this.RecursiveLog(Obj,this.ObjectLog);
+    }
+}
+
+function InsertTab(Event){
+	let KeyCode = Event.which?Event.which:Event.keyCode;
+	if (KeyCode==9){
+    	if (this.setSelectionRange){
+        	let SelectionStart = this.selectionStart,SelectionEnd=this.selectionEnd;
+            this.value=this.value.substring(0,SelectionStart)+"\t"+this.value.substr(SelectionStart);
+            this.setSelectionRange(SelectionStart+1,SelectionStart+1);
+            this.focus();
+        } else if (this.createTextRange){
+        	document.selection.createRange().text="\t";
+            this.onblur=function(){
+            	this.focus();
+                this.onblur=null;
+            }
+        }
+        if (Event.returnValue){
+        	Event.returnValue=false;
+        }
+        if (Event.preventDefault){
+        	Event.preventDefault();
+        }
+        return false;
+   	}
+    return true;
+}
+
+CodeBox.addEventListener("keydown",InsertTab);
+Clear.onmousedown = function(){
+	let child = Output.lastElementChild;  
+    while (child) {
+      Output.removeChild(child); 
+      child = Output.lastElementChild;
+    }
+    ObjectHandler.ClearElementChildren(ObjectHandler.ObjectLog);
+    HighlightPre.innerHTML="";
+}
+
+function NewElement(Tag,HTML,To,Style,Attr){
+	let el = document.createElement(Tag);
+    el.innerHTML=HTML;
+    To.appendChild(el);
+    if (Style){
+    	for (let k in Style){
+        	let v = Style[k];
+            el.style[k]=v;
+        }
+    }
+    if (Attr){
+    	for (let k in Attr){
+        	let v = Attr[k];
+            el[k]=v;
+        }
+    }
+    return el;
+}
+
+Library.Standard.Globals.log = function log(...args){
+	NewElement("p",`${args.reduce((a,b)=>a+String(b))}`,Output,{
+    	marginTop:0,
+        marginBottom:0,
+    });
+}
+
+Library.Standard.Globals.warn = function warn(...args){
+	NewElement("p",`<span style="color:#ff5621">WARNING: ${args.reduce((a,b)=>a+String(b))}</span><br>`,Output,{
+    	marginTop:0,
+        marginBottom:0,
+    });
+}
+
+Library.Standard.Globals.info = function info(...args){
+	NewElement("p",`<span style="color:#1a58ee">INFO: ${args.reduce((a,b)=>a+String(b))}</span><br>`,Output,{
+    	marginTop:0,
+        marginBottom:0,
+    });
+}
+
+Library.Standard.Globals.clog = function clog(color,...args){
+	NewElement("p",`<span style="color:${color}">INFO: ${args.reduce((a,b)=>a+String(b))}</span><br>`,Output,{
+    	marginTop:0,
+        marginBottom:0,
+    });
+}
+
+Library.Standard.Globals.require = function require(name){
+	if (Requires.hasOwnProperty(name)){
+    	return Requires[name];
+    }
+    let Save = SaveObject[name];
+    if (!Save){
+    	throw new CodeError(`Attempt to require an invalid script "${name}"`);
+    }
+    let Result = RunCode(Save.Code,name);
+    if (Result.GlobalSettings.type!="module"){
+    	throw new CodeError(`Attempt to require an invalid module "${name}"`);
+    }
+    Requires[name]=Result.GlobalSettings.exports;
+    return Result.GlobalSettings.exports;
+}
+
+Library.Standard.Globals.clearrequires = function clearrequires(){
+	for(let k in Requires){
+    	delete Requires[k];
+    }
+}
+
+Library.Standard.AddGlobal("quickcall",function(f,a){
+	let n = [];
+    for(let k in a){
+    	let v = a[k];
+        let r;
+        if (v instanceof Array){
+        	r = f(v);
+        } else {
+        	r = f(v);
+        }
+    	n[k]=r;
+    }
+    return n;
+});
+
+for(let k in NewGlobals){
+	Library.Standard.AddGlobal(k,NewGlobals[k]);
+}
+
+const XBSLibSettings = {
+	ASTVariable:false,
+    DeprecatedCallback:Library.Standard.Globals.warn,
+    DeprecatedCalls:["ucall","rnd"],
+};
+
+function RunCode(Code,Name="XBS"){
+	try {
+    	let Lib = {};
+        for(let k in Library.Standard.Globals){
+        	Lib[k]=Library.Standard.Globals[k];
+        }
+        Lib.env = Lib;
+        let Result = XBS.Run(Code,Library.New(Lib,XBSLibSettings));
+        if (Result.GlobalSettings.objectlog == true){
+        	ObjectHandler.LogObject(Result);
+        }
+    	return Result;
+    } catch(e){
+    	let er=e;
+    	e = String(e);
+        NewElement("p",`<span style="color:#ff243c">{${Name}}: ${er.stack}</span><br>`,Output,{
+        	marginTop:0,
+            marginBottom:0,
+        });
+        return {}
+    }
+}
+
+Execute.onmousedown = function(){
+	RunCode(CodeBox.value);
+}
+
+//Saving
+
+function DeleteSave(Name){
+	if (SaveObject.hasOwnProperty(Name)){
+    	Saves.removeChild(SaveObject[Name].Element);
+    	delete SaveObject[Name];
+        LocalSaves.RemoveItem(Name);
+        if (Requires.hasOwnProperty(Name)){
+        	delete Requires[Name];
+        }
+    }
+}
+
+function NewSave(Name,Code){
+	DeleteSave(Name);
+    const Save = {
+    	Element:undefined,
+        Code:Code,
+    }
+    LocalSaves.SetItem(Name,Code);
+    SaveObject[Name] = Save;
+    let Div = NewElement("div","",Saves,undefined,{
+    	className:"save",
+    });
+    Save.Element=Div;
+    let Span = NewElement("span",Name,Div);
+    let Load = NewElement("button","Load",Div,undefined,{
+    	className:"savebtn"
+    });
+    let Delete = NewElement("button","Delete",Div,undefined,{
+    	className:"savebtn"
+    });
+    Load.addEventListener("mousedown",()=>{
+    	CodeBox.value = SaveObject[Name].Code;
+        SaveName.value = Name;
+    });
+    Delete.addEventListener("mousedown",()=>{
+    	DeleteSave(Name);
+    });
+}
+
+const LoadedSaves = LocalSaves.GetItems();
+
+for (let k in LoadedSaves){
+	let v = LoadedSaves[k];
+    NewSave(k,v);
+}
+
+SaveCode.addEventListener("mousedown",()=>{
+	if (CodeBox.value == "" || SaveName.Value == ""){return}
+    if (SaveName.value.match(/\s+/g) == SaveName.value){return};
+	NewSave(SaveName.value,CodeBox.value);
+});
+
+ClearButton.addEventListener("mousedown",()=>{
+	SaveName.value="";
+    CodeBox.value="";
+});
+
+//{{ Syntax Highlighting for code examples }}\\
+
+const CodeExamples = document.querySelectorAll(`pre[class="codeblock-big"]`);
+const HighlightColors = {
+	"Keyword":"#2d6cfa",
+    "Globals":"#ff2a48",
+    "Bools":"#ed7f15",
+    "Operators":"#5c9e23",
+}
+const Highlights = {
+	"Keyword":["set","func","stop","send","using","while","for","foreach","isa","class","extends","with","new","destruct","if","elif","else","in","as","of","del","swap","unset","switch","case","def","repeat","settype","chunk","try","catch","finally","exclude","istype","doerror"],
+    "Globals":[],
+    "Bools":["true","false","null"],
+}
+
+for(let k in Library.Standard.Globals){
+	Highlights.Globals.push(k);
+}
+
+const ColorWord = (w,c)=>`<span style='color:${c};'>${w}</span>`;
+
+const Highlight = (Element)=>{
+	let Text = Element.innerHTML;
+    Text = Text.replace(/(?<!\w+)((0(x[A-Fa-f0-9]+|(b[0-1]+))|([0-9]+(\.[0-9]+)?(e[\+\-]?[0-9]+)?)))(?!\w+)/g,ColorWord("$&","#ffaf21"));
+    Text = Text.replace(/(\".*?\")/sg,ColorWord("$&","#de7f2a"));
+    Text = Text.replace(/(\@\w+)/g,ColorWord("$&","#7f2cde"));
+    Text = Text.replace(/(?<!\<)(\+|-\|\*|\/|\^|\%|\?)/g,ColorWord("$&",HighlightColors.Operators))
+    Text = Text.replace(/((?<=(\(|\,|\;|\{|\[))\w+?(?=(\,|\;|\)|\:\w+?|\}|\]|\=)))+/g,ColorWord("$&","#2f49de"));
+    Text = Text.replace(/(?<=\:)(\w+)(?=\s*[\=\,\)\;\{\}])/g,ColorWord("$&","#348fff"));
+    Text = Text.replace(/(?<=(\.|\:\:|\-\&gt;))\w+(?![0-9]+)/g,ColorWord("$&","#8f30ed"));
+    Text = Text.replace(/((?<=(set|using|func|class)\s+)\w+)/g,ColorWord("$&","#2f49de"));
+    Text = Text.replace(/\#\&gt\;(.*?)\&lt\;\#/gsm,ColorWord("$&","#8f8f9f"));
+    Text = Text.replace(/(?<!\:)(\#.*)/g,ColorWord("$&","#8f8f9f"));
+    for(let k in Highlights){
+    	let v = Highlights[k];
+        let c = HighlightColors[k];
+        let str = v.join("|");
+        Text = Text.replace(new RegExp(`(?<!\>)(\\b(${str})\\b)(?!\<)`,"g"),ColorWord("$&",c));
+    }
+    Element.innerHTML = Text;
+}
+
+CodeExamples.forEach(x=>Highlight(x));
+
+HighlightBtn.addEventListener("mousedown",()=>{
+	HighlightPre.innerHTML = CodeBox.value.replace(/[\>\<]/g,function(x){
+    	if (x==">"){return "&gt;"};
+        if (x=="<"){return "&lt;"};
+    });
+    Highlight(HighlightPre);
+});
+
+</script>
+</body>
+</html>
