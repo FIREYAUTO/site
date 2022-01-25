@@ -1,294 +1,415 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+<!-- CSS Styling -->
 <style>
-h3 {
-	font-family: 'Space Mono', monospace;
-	font-size:15px;
-}
-.notes{
-font-size:12px;
-font-family: 'Space Mono', monospace;
-}
-.code {
-	font-family: 'Space Mono', monospace;
-}
-#codebox {
-	display:inline-block;
-	width:500px;
-    height:200px;
-    font-family: 'Space Mono', monospace;
-    font-size:12px;
+:root {
+	--code-font:'Source Code Pro', monospace;
+    --code-font-size:12px;
+    --bg:#404040;
+    --border:#4a4a4a;
+    --dark-bg:#303030;
+    --dark-border:3a3a3a;
+    --text:#efefef;
+    --head:#ffffff;
+    --muted-text:#afafaf;
+    --light-bg:#505050;
+    --light-border:#5a5a5a;
+    --extra-light-bg:#606060;
+    --extra-light-border:#6a6a6a;
+    --selection-bg:#707070;
+    --font:"Varela Round",sans-serif;
     tab-size:4;
-    overflow:auto;
+    font-family:var(--font);
 }
-button {
-	width:100px;
-    margin-right:10px;
-    margin-top:5px;
+body {
+	padding:0;
+    margin:0;
+    background:var(--bg);
+}
+.code-font {
+	font-family:var(--code-font);
+    font-size:var(--code-font-size);
+}
+.bg {
+	background:var(--bg);
+    color:var(--text);
+}
+.muted {
+	color:var(--muted-text) !important;
+}
+.head {
+	color:var(--head);
+    font-size:16px;
+    margin:0;
+}
+.small-margin {
+	margin-top:10px;
+    margin-bottom:3px;
+}
+#content {
+	padding:15px;
+}
+#highlighted {
+	background:var(--dark-bg);
+	border-radius:5px;
+    border:2px solid var(--dark-border);
+	display:inline-block;
+	position:absolute;
+	width:calc(100% - 35px);
+    left:15px;
+    margin:0;
+    font-family:var(--code-font);
+    padding:2px;
+    height:calc(300px - 5px);
+    font-size:var(--code-font-size);
+    overflow:hidden;
+    overflow-wrap:unset;
+    z-index:1;
+    tab-size:4;
+}
+#cursor-pos {
+	background:rgba(0,0,0,0);
+	border-radius:5px;
+    border:2px solid rgba(0,0,0,0);
+	display:inline-block;
+	position:absolute;
+	width:calc(100% - 35px);
+    color:var(--head);
+    left:15px;
+    margin:0;
+    padding:0;
+    font-size:var(--code-font-size);
+    font-family:var(--code-font);
+    height:calc(300px - 5px);
+    font-size:12px;
+    overflow:hidden;
+    overflow-wrap:unset;
+    z-index:2;
+    tab-size:4;
+}
+#editor {
+	background:rgba(0,0,0,0);
+    color:rgba(0,0,0,0);
+    width:100%;
+    height:300px;
+    font-size:var(--code-font-size);
+    z-index:2;
+    font-family:var(--code-font);
+    position:relative;
+    white-space: nowrap;
+    overflow: auto;
+    border:0;
+    resize:none;
+    tab-size:4;
+}
+#editor:focus {
+	outline:0;
 }
 #output {
-	border-left:5px solid #dddddd;
-    padding-left:10px;
-    background:#eeeeee;
-    font-family: 'Space Mono', monospace;
+	width:calc(100% - 10px);
+    padding:0;
+    margin:0;
+    background:var(--light-bg);
+    border-left:5px solid var(--light-border);
+    padding-left:5px;
+}
+::selection {
+	color:var(--text);
+    background:#606060;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #505050;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #707070;
+}
+::-webkit-scrollbar {
+  width: 20px;
+}
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+::-webkit-scrollbar-corner {
+	opacity:1;
+}
+#buttons {
+	margin-top:5px;
+}
+.btn {
+	background:var(--dark-bg);
+	border:2px solid var(--dark-border);
+    color:var(--text);
+    display:inline;
+    font-family:var(--font);
     font-size:12px;
+    margin-right:4px;
+    padding-left:5px;
+    padding-right:5px;
+    padding-top:2px;
+    padding-bottom:2px;
 }
-#saves {
-	display:inline-block;
-	background:#ffffff;
-    width:200px;
-    height:200px;
-    overflow:auto;
-    font-family: 'Space Mono', monospace;
-    border:1px solid #6f6f6f;
-    border-radius:3px;
+.btn:focus {
+	outline:0;
 }
-.save {
-	display:inline-block;
-	width:100%;
-    height:20px;
-    font-size:12px;
-    background:#f5f5f5;
+.btn:hover {
+	font-size:12px;
+	background:var(--light-bg);
+	border:2px solid var(--light-border);
 }
-.savebtn {
-	margin-top:0;
-	display:inline-block;
-    font-family: 'Space Mono', monospace;
-    width:55px;
-    margin-left:0px;
-    margin-right:0px;
-    font-size:11px;
-    height:15px;
-    line-height:0;
-}
-
 #objectlog,.objectlog {
-	border-left:5px solid #dfdfdf;
+	border-left:5px solid var(--light-border);
     padding-left:20px;
     font-family: 'Space Mono', monospace;
 }
 .objectlog-p {
 	margin-top:0;
     margin-bottom:0;
-    color:#7f7f7f;
+    color:#bfbfbf;
 }
 .objectlog-btn {
 	font-size:12px;
     margin-right:5px;
     width:50px;
-    background:#f3f3f3;
+    background:var(--dark-bg);
+    color:var(--text);
     border-radius:5px;
-    border:1px solid #f3f3f3;
+    border:1px solid var(--dark-border);
     font-family: 'Space Mono', monospace;
 }
-
-.quote{
-	border-left:5px solid #dddddd;
-    padding-left:10px;
+#saves {
+	width:50%;
+    background:var(--dark-bg);
+    border:2px solid var(--dark-border);
+    overflow:auto;
 }
-
-.codeblock-single {
-	border-radius:5px;
-    padding:3px;
+.save {
+	width:100%;
+    display:block;
+}
+.save-name {
+	margin:0;
+    color:var(--text);
+    display:inline-block;
     font-size:12px;
-    background:#eeeeee;
+    height:15px;
 }
-
-.codeblock-big {
-	border-radius:5px;
-    padding:3px;
+.save-btn {
+	background:var(--light-bg);
+	border:2px solid var(--light-border);
+    color:var(--text);
+    display:inline-block;
+    float:right;
+    font-family:var(--font);
     font-size:12px;
-    background:#eeeeee;
-    tab-size:4;
+    padding:0;
+    padding-left:5px;
+    padding-right:5px;
+    margin-left:5px;
+    height:15px;
+    line-height:2px;
 }
-.upper {
-	background:#ff1a36;
+.save-btn:hover {
+	background:var(--bg);
+	border:2px solid var(--border);
 }
-.upper-text {
-	color:#ffffff;
+.save-btn:focus {
+	outline:0;
+}
+#code-complete {
+	background:var(--bg);
+    border:2px solid var(--border);
+    color:var(--text);
+    position:absolute;
+    display:none;
+    min-width:150px;
+    max-width:300px;
+    min-height:14px;
+    max-height:calc(14px * 5);
+    font-family:var(--code-font);
+    font-size:var(--code-font-size);
+    overflow:auto;
+    z-index:100;
+}
+.ccm-item {
+	background:rgba(0,0,0,0);
+    font-family:var(--code-font);
+    font-size:var(--code-font-size);
+}
+.ccm-select {
+	background:var(--selection-bg);
+    font-family:var(--code-font);
+    font-size:var(--code-font-size);
 }
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+<!-- CSS References -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+<!-- JS Libraries -->
 <script src="https://fireyauto.github.io/Javascript/Libraries/storage.js"></script>
 <script src="https://fireyauto.github.io/XBS/languagetype.js"></script>
 <script src="https://fireyauto.github.io/XBS/library.js"></script>
 </head>
 <body>
-<div class="upper">
-	<p class="upper-text">This site is undergoing renovations</p>
+<!-- HTML Elements -->
+<div class="bg" id="content">
+	<h3 class="head">Code Editor</h3>
+    <div id="code-complete"></div>
+    <pre id="highlighted" class="code-font"></pre>
+    <pre id="cursor-pos" class="code-font"></pre>
+    <textarea id="editor" class="code-font" spellcheck=false autocomplete=false autocapitalize=false></textarea>
+    <div id="buttons">
+    	<button class="btn" id="run-button">Run Code</button>
+        <button class="btn" id="clear-output">Clear Output</button>
+        <input type="text" class="btn" id="save-name" placeholder="Save Name">
+        <button class="btn" id="save-code">Save Code</button>
+        <button class="btn" id="clear-button">Clear Code</button>
+    </div>
+    <h3 class="head small-margin">Output</h3>
+    <pre id="output"></pre>
+    <div id="objectlog" class="objectlog"></div>
+    <h3 class="head small-margin">Saves</h3>
+    <div id="saves"></div>
 </div>
-<h3>Code Editor</h3>
-<textarea id="codebox" placeholder="XBS Code Here" spellcheck="false"></textarea>
-<div id="saves"></div>
-<br>
-<button id="execute">Run XBS</button>
-<button id="clear">Clear Output</button>
-<input type="text" placeholder="Save Name" class="code" id="savename">
-<button id="savecode">Save Code</button>
-<button id="clearbtn">Clear</button>
-<button id="highlightbtn">Highlight</button>
-<br>
-<h3>Output</h3>
-<pre id="output"></pre>
-<div id="objectlog" class="objectlog">
-</div>
-<br>
-<div>
-<h3>Highlighted Code</h3>
-<pre class="codeblock-big" id="highlighted"></pre>
-</div>
-<div class="notes">
-	<h3>Notes</h3>
-	<p>This is the <i>official</i> <b>XBS</b> code editor</p>
-    <p>To see more information, please see <a href="https://github.com/FIREYAUTO/XBS/wiki" target="_new">XBS Wiki</a></p>
-	<p>It extends the standard XBS library. Here is what it adds:</p>
-	<div class="quote">
-		<span class="codeblock-single">require</span>
-		<div class="quote">
-			<p>This function will require a given save file if the save file has exports and is a module.</p>
-            <pre class="codeblock-big">@type="module"
-@exports={Hello="World"}</pre>
-		</div>
-        <span class="codeblock-single">clearrequires</span>
-        <div class="quote">
-        	<p>This function clears the require cache</p>
-        </div>
-        <span class="codeblock-single">quickcall</span>
-        <div class="quote">
-        	<p>This function will call the given function with the array, and will return the results as an array.</p>
-            <pre class="codeblock-big">set x = ["Hello","World"]
-quickcall(log,x);</pre>
-        </div>
-        <span class="codeblock-single">ucall</span>
-        <div class="quote">
-        	<p>This function will call the given function with the unpacked array.</p>
-            <pre class="codeblock-big">set x = ["Hello, ","world!"];
-ucall(log,x);</pre>
-        </div>
-	</div>
-    <p>This code editor uses a different version of XBS. Here, we use the <u>typed</u> version of XBS. It allows you to declare types for variables and more</p>
-    <div class="quote">
-    	<p>Typed Variables example 1</p>
-    	<pre class="codeblock-big">set x:string = "Hello, world!"; #Wouldn't error
-set y:number = "1"; #Would error</pre>
-		<p>Typed Variables example 2</p>
-        <pre class="codeblock-big">func Add(a:number,b:number):number{
-	send a+b;
-}
-
-log(Add(1,2));</pre>
-		<p>Typed Variables example 3</p>
-        <pre class="codeblock-big">set x:object = {
-	a:string="Hello",
-	b:array=[
-		1,
-		2,
-        true,
-	],
-}
-log(x.a);
-log(x.b[0]);</pre>
-    </div>
-    <p>Require Example</p>
-    <div class="quote">
-    	<span class="codeblock-single">Reverse</span>
-        <pre class="codeblock-big">@type="module"
-@exports=func(a:string):string{
-	send string.reverse(a);
-}</pre>
-		<span class="codeblock-single">Main</span>
-        <pre class="codeblock-big">set Reverse:function = require("Reverse");
-log(Reverse("Hello, world!"));</pre>
-    </div>
-    <p>Function Defaults</p>
-    <div class="quote">
-    	<p>In this version of XBS, function defaults are different from the regular way to declare them</p>
-        <span class="codeblock-single">Typed XBS (Our method)</span>
-        <pre class="codeblock-big">func add(a:number=1,b:number=2):number{
-	send a+b;
-}
-log(add(1))</pre>
-        <span class="codeblock-single">Regular XBS</span>
-        <pre class="codeblock-big">func add(a,b){
-	send a+b;
-}{a=1,b=2}
-log(add(1))</pre>
-    </div>
-    <p>Expression Parsing</p>
-    <div class="quote">
-    	<p>Another thing that is different is that typed XBS parses expressions in a new way</p>
-        <span class="codeblock-single">Typed XBS Expression</span>
-        <pre class="codeblock-big">(log|print)("Hello, world!")</pre>
-        <p>Running the code above in regular XBS will <b>not</b> work</p>
-    </div>
-    <p>Type Methods</p>
-    <div class="quote">
-    	<p>Typed XBS has custom methods for datatypes like strings and arrays</p>
-        <span class="codeblock-single">Type Method Example</span>
-        <pre class="codeblock-big">set String = "Hello, world!";
-log(String::reverse())</pre>
-        <p>Running the code above in regular XBS will <b>not</b> work</p>
-    </div>
-    <p>Switch Statements</p>
-    <div class="quote">
-    	<p>Switch statements in XBS are similar to JavaScript, but are different. We still use <span class="codeblock-single">switch</span> and <span class="codeblock-single">case</span>, but there are some differences. <span class="codeblock-single">def</span> is the default for a switch statement.</p>
-        <pre class="codeblock-big">func switchTest(x){
-	switch(x){
-		case(1){
-    		log("x is 1");
-    	}case(2){
-    		log("x is 2");
-    	}def{
-    		log("x didn't match any cases");
-    	}
-	}
-}
-
-switchTest(1);
-switchTest(2);
-switchTest(3);
-</pre>
-    </div>
-</div>
+<!-- Main Script -->
 <script>
 
-const CodeBox = document.getElementById("codebox");
-const Execute = document.getElementById("execute");
-const Output = document.getElementById("output");
-const Clear = document.getElementById("clear");
-const Requires = {};
-const SaveObject = {};
-const Saves = document.getElementById("saves");
-const LocalSaves = new LocalStorage("LocalSaves");
-const SaveCode = document.getElementById("savecode");
-const SaveName = document.getElementById("savename");
-const ClearButton = document.getElementById("clearbtn");
+//{{ Main Functions }}\\
 
-const HighlightBtn = document.getElementById("highlightbtn");
-const HighlightPre = document.getElementById("highlighted");
+function GetElement(Id){
+	return document.getElementById(Id);
+}
+
+function __Apply(a,b){
+	for(let k in b){
+    	let v = b[k];
+        if(typeof v == "object"){
+        	__Apply(a[k],v);
+        }else{
+        	a[k]=v;
+        }
+    }
+}
+
+function NewElement(Tag,To,Props){
+	let Element = document.createElement(Tag);
+    To.appendChild(Element);
+    __Apply(Element,Props);
+    return Element;
+};
+
+String.prototype.replaceCharAt = function(pos,char){
+	return `${this.substring(0,pos)}${char}${this.substring(pos+1,this.length)}`;
+}
+
+String.prototype.escapeHTML = function(){
+	let v = this.replace(/\&/g,"&amp;");
+    v = v.replace(/\</g,"&lt;");
+    v = v.replace(/\"/g,"&quot;");
+    v = v.replace(/\>/g,"&gt;");
+    v = v.replace(/\'/g,"&apos;");
+    return v;
+}
+
+String.prototype.isHTMLChar = function(Char){
+	return (this=="&lt;"&&Char=="<")||(this=="&gt;"&&Char==">")||(this=="&quot;"&&Char=="\"")||(this=="&amp;"&&Char=="&")||(this=="&apos;"&&Char=="'")
+}
+
+String.prototype.toHTMLChar = function(){
+	return {"\"":"&quot;","'":"&apos;","<":"&lt;",">":"&gt;","&":"&amp;"}[this];
+}
+
+//{{ Globals }}\\
 
 const NewGlobals = {
-	clearoutput:function(){
-    	let child = Output.lastElementChild;  
-    	while (child) {
-      	Output.removeChild(child); 
-      	child = Output.lastElementChild;
+	log:function(...args){
+    	NewElement("p",Settings.Output,{
+        	innerHTML:`${args.reduce((a,b)=>a+String(b))}`,
+            style:{
+            	marginTop:0,
+                marginBottom:0,
+            },
+        });
+    },
+    warn:function(...args){
+    	NewElement("p",Settings.Output,{
+        	innerHTML:ColorText(`WARNING: ${args.reduce((a,b)=>a+String(b))}`,"#ff9651"),
+            style:{
+            	marginTop:0,
+                marginBottom:0,
+            },
+        });
+    },
+    info:function(...args){
+    	NewElement("p",Settings.Output,{
+        	innerHTML:ColorText(`INFO: ${args.reduce((a,b)=>a+String(b))}`,"#4a98fe"),
+            style:{
+            	marginTop:0,
+                marginBottom:0,
+            },
+        });
+    },
+    clog:function(c,...args){
+    	NewElement("p",Settings.Output,{
+        	innerHTML:ColorText(`${args.reduce((a,b)=>a+String(b))}`,c),
+            style:{
+            	marginTop:0,
+                marginBottom:0,
+            },
+        });
+    },
+    colorlog:function(c,...args){
+    	NewElement("p",Settings.Output,{
+        	innerHTML:ColorText(`${args.reduce((a,b)=>a+String(b))}`,c),
+            style:{
+            	marginTop:0,
+                marginBottom:0,
+            },
+        });
+    },
+    quickcall:function(f,a){
+		let n = [];
+    	for(let k in a){
+    		let v = a[k];
+        	let r;
+        	if (v instanceof Array){
+        		r = f(v);
+        	} else {
+        		r = f(v);
+        	}
+    		n[k]=r;
     	}
-    	ObjectHandler.ClearElementChildren(ObjectHandler.ObjectLog);
-    	HighlightPre.innerHTML="";
+    	return n;
+	},
+    clearoutput:function(){
+    	Settings.ClearElementChildren(Settings.Output);
+        ObjectHandler.ClearElementChildren(ObjectHandler.ObjectLog);
     },
-    getsaves:function(){
-        return Object.keys(SaveObject)
+    require:function(Name){
+    	let Result = Settings.Requires[Name];
+        if(!Result){
+        	let Code = Settings.GetSave(Name);
+            if(!Code){
+            	throw new CodeError(`Attempt to require invalid save "${Name}"`);
+            }
+        	Result = Settings.XBS.Run(Code,Name);
+        }
+        if(Result.GlobalSettings.type!="module"){
+        	throw new CodeError(`"${Name}" is not a module! You may be missing '@type="module"'`);
+        }
+        if(!Result.GlobalSettings.hasOwnProperty("exports")){
+        	throw new CodeError(`Module "${Name}" is missing the "exports" global setting`);
+        }
+        Settings.Requires[Name]=Result;
+        return Result.GlobalSettings.exports;
     },
-    newsave:function(name,code){
-    	NewSave(name,code)
-    },
-    delsave:function(name){
-    	DeleteSave(name);
-    },
-    getsave:function(name){
-    	return SaveObject[name]?.Code;
+    clearrequires:function(){
+    	Settings.ClearRequires();
     },
     ucall:function(callback,params){
     	if (params instanceof Array){
@@ -297,17 +418,137 @@ const NewGlobals = {
         	return callback(params);
         }
     },
+};
+
+for(let k in NewGlobals){
+	Library.Standard.AddGlobal(k,NewGlobals[k]);
 }
+
+//{{ Settings }}\\
+
+const Keywords = [];
+for(let k in Lex.Tokens){
+	let v = Lex.Tokens[k];
+	if(v.Type=="Keyword"){
+    	Keywords.push(v.Token);
+    }
+}
+
+const Globals = [];
+for(let k in Library.Standard.Globals){
+	Globals.push(k);
+}
+
+const Extras = ["self","construct","__add","__sub","__mul","__div","__mod","__pow","__index","__setindex","__unm","__fdiv","__tostring","super"];
+
+const Settings = {
+	Editor:GetElement("editor"),
+    Highlighted:GetElement("highlighted"),
+    CursorPos:GetElement("cursor-pos"),
+    Output:GetElement("output"),
+    CodeComplete:false,
+    Colors:{
+    	LongComment:"#8f8f8f",
+    	Comment:"#8f8f8f",
+        String:"#93dbff",
+        String2:"#93dbff",
+        EString:"#93dbff",
+        TypeCall:"#ce97ff",
+    	Keyword:"#ff3a66",
+        SetIndex:"#ce97ff",
+        Number:"#63bbfe",
+        Index:"#7dc5ff",
+        GlobalSetting:"#ce97ff",
+        Global:"#ffa645",
+        Extras:"#ffc66c",
+        Boolean:"#51ff7f",
+        Call:"#ce97ff",
+        Operator:"#ff6295",
+        Brackets:"#cfcfcf",
+    },
+    Matches:{
+    	Keyword:{
+        	Match:`(\\b(${Keywords.join("|")})\\b)`,
+            Types:"g",
+        },
+    	String:{
+        	Match:`\\${"\"".toHTMLChar()}.*?\\${"\"".toHTMLChar()}`,
+         	Types:"gs",
+        },
+        String2:{
+        	Match:`\\${"'".toHTMLChar()}.*?\\${"'".toHTMLChar()}`,
+         	Types:"gs",
+        },
+        EString:{
+        	Match:`\\\`.*?\\\``,
+         	Types:"gs",
+        },
+        Number:{
+        	Match:"(?<!\\w+)((0(x[A-Fa-f0-9]+|(b[0-1]+))|([0-9]+(\\.[0-9]+)?(e[\\+\\-]?[0-9]+)?)))(?!\\w+)",
+            Types:"g",
+        },
+        Boolean:{
+        	Match:"\\b(true|false|null)\\b",
+            Types:"g",
+        },
+        Index:{
+        	Match:"(?<=\\w+\\s*\\.)\\w+",
+            Types:"g",
+        },
+        TypeCall:{
+        	Match:"(?<=\\w+\\s*(\\:{2}|\\-\\&gt;))\\w+",
+            Types:"g",
+        },
+        SetIndex:{
+        	Match:"(?<=\\s*(?<!\\:)\\:)\\w+",
+            Types:"g",
+        },
+        Global:{
+        	Match:`(?<!(\\.|\\:{1,2}|\\-\\&lt;))\\b(${Globals.join("|")})\\b`,
+            Types:"g",
+        },
+        Extras:{
+        	Match:`(?<!(\\.|\\:{1,2}|\\-\\&lt;))(${Extras.join("|")})`,
+            Types:"g",
+        },
+        Comment:{
+        	Match:"(?<!(\\&lt;|\\\".*?))\\#(?!(\\&gt;|.*?\\\")).*",
+            Types:"g",
+        },
+        LongComment:{
+        	Match:"\\#\\&gt;.*\\&lt;\\#",
+            Types:"gms",
+        },
+        Operator:{
+        	Match:"(\\&gt;\\=|\\&lt;\\=|\\.|\\+|\\-|\\*|\\/|\\^|\\%|\\||\\&gt;|\\={2}|\\&lt;|\\&amp;|\\!\\=|\\!|\\:{2}|\\:|\\=|\\?|\\~)",
+            Types:"g",
+        },
+		Brackets:{
+        	Match:"(\\,|(?<!\\&(amp|apos|quot|lt|gt))\\;|\\(|\\)|\\{|\\}|\\[|\\])",
+            Types:"g",
+        },
+        GlobalSetting:{
+        	Match:"\\@\\w+(?=\\s*\\=)",
+            Types:"g",
+        },
+        Call:{
+        	Match:"(?<!\\.)\\w+(?=\\()",
+            Types:"g",
+        },
+    },
+};
+
+//{{ Object Log }}\\
 
 const ObjectHandler = {
 	ObjectLog:document.getElementById("objectlog"),
     Colors:{
-    	String:"#d35d17",
-        Number:"#348def",
-        Bool:"#ff2f5a",
-        Function:"#9f9f9f",
-        FunctionName:"#ffaf32",
-        Cyclic:"#7a36ef",
+    	String:Settings.Colors.String,//"#d35d17",
+        Number:Settings.Colors.Number,//"#348def",
+        Bool:Settings.Colors.Boolean,//"#ff2f5a",
+        Function:Settings.Colors.SetIndex,//"#9f9f9f",
+        FunctionName:Settings.Colors.Extras,//"#ffaf32",
+        Cyclic:Settings.Colors.SetIndex,//"#7a36ef",
     },
 	ClearElementChildren:function(Element){
     	let Child = Element.lastElementChild;  
@@ -407,16 +648,144 @@ const ObjectHandler = {
     }
 }
 
+//{{ Highlighting Code }}\\
+
+const ColorText = (Text,Color,Type)=>`<span style="color:${Color}"${Type?` highlightType="${Type}"`:""}>${Text}</span>`;
+const RCT = (Color,Type)=>ColorText("$&",Color,Type);
+const REP = (Text,Reg,Rep)=>`${Text}`.replace(Reg,Rep);
+
+const RE = (Text,Extra)=>{
+	let e = new RegExp(`(${Text})(?![^<]*>|[^<>]*</)`,Extra);
+    if (Extra&&Extra.match("m")){
+    	e.multiline=true;
+    }
+	return e
+}
+
+const HighlightText = Text=>{
+	let Result = Text;
+    for(let k in Settings.Colors){
+    	let v = Settings.Colors[k];
+        let m = Settings.Matches[k];
+        Result = REP(Result,RE(m.Match,m.Types),RCT(v,k));
+    }
+	return Result;
+}
+
+const WriteLT = (LT,T)=>{
+	LT.push(T);
+}
+
+const CloseLT = LT=>{
+	let T = ColorText(LT.join(""),Settings.Colors.EString);
+    LT.length=0;
+	return T
+}
+
+const HighlightEvent = ()=>{
+	let Value = Settings.Editor.value;
+	Settings.Highlighted.innerHTML = HighlightText(Value.escapeHTML());
+    //{{ EString Escape Highlighting }}\\
+    let Spans = Settings.Highlighted.getElementsByTagName("SPAN");
+    for(let i=0;i<=Spans.length-1;i++){
+    	let Span = Spans[i];
+        if (Span.getAttribute("highlightType")=="EString"){
+        	let T = Span.innerHTML.split(/(\{.*?\})/s);
+            let LT = [];
+            let F = [];
+            for (let k in T){
+            	let v = T[k];
+                if (v.startsWith("{")&&v.endsWith("}")){
+                	F.push(CloseLT(LT));
+                    F.push(HighlightText(v));
+                }else{
+                	WriteLT(LT,v);
+                }
+            }
+            if(LT.length>0){
+            	F.push(CloseLT(LT));
+            }
+            Span.innerHTML = F.join("");
+            Span.style.color="";
+        }
+    }
+}
+//t
+
+let EditorWidth = Settings.Editor.offsetWidth;
+let EditorHeight = Settings.Editor.offsetHeight;
+const UpdateScroll = ()=>{
+	let h = Settings.Highlighted;
+    let e = Settings.Editor;
+    let c = Settings.CursorPos;
+    let EditorWidth = Settings.Editor.offsetWidth;
+	let EditorHeight = Settings.Editor.offsetHeight;
+    if(e.scrollHeight > EditorHeight){
+    	h.style.width = "calc(100% - 52px)";
+        c.style.width = "calc(100% - 52px)";
+    } else {
+    	h.style.width = "calc(100% - 35px)";
+        c.style.width = "calc(100% - 35px)";
+    }
+    if(e.scrollWidth > EditorWidth){
+    	h.style.height = "calc(300px - 18px)";
+        c.style.height = "calc(300px - 18px)";
+    } else {
+    	h.style.height = "calc(300px - 5px)";
+        c.style.height = "calc(300px - 5px)";
+    }
+}
+
+Settings.Editor.addEventListener("keydown",HighlightEvent);
+Settings.Editor.addEventListener("input",()=>{
+	HighlightEvent();
+    UpdateScroll();
+});
+
+Settings.Editor.value = ``;
+HighlightEvent();
+
+//{{ Tabs }}\\
+
+const AutoClosingPairs = [
+	{
+    	Start:"\"",
+        End:"\"",
+    },
+    {
+    	Start:"'",
+        End:"'",
+    },
+    {
+    	Start:"`",
+        End:"`",
+    },
+    {
+    	Start:"(",
+        End:")",
+    },
+    {
+    	Start:"{",
+        End:"}",
+    },
+    {
+    	Start:"[",
+        End:"]",
+    },
+];
+
 function InsertTab(Event){
 	let KeyCode = Event.which?Event.which:Event.keyCode;
-	if (KeyCode==9){
+	if (KeyCode==9&&!Settings.CodeComplete){
     	if (this.setSelectionRange){
         	let SelectionStart = this.selectionStart,SelectionEnd=this.selectionEnd;
             this.value=this.value.substring(0,SelectionStart)+"\t"+this.value.substr(SelectionStart);
             this.setSelectionRange(SelectionStart+1,SelectionStart+1);
             this.focus();
+            HighlightEvent();
         } else if (this.createTextRange){
         	document.selection.createRange().text="\t";
+            HighlightEvent();
             this.onblur=function(){
             	this.focus();
                 this.onblur=null;
@@ -429,252 +798,523 @@ function InsertTab(Event){
         	Event.preventDefault();
         }
         return false;
-   	}
+    }else if(KeyCode==13&&!Settings.CodeComplete){
+    	let v = this.value;
+    	let s=this.selectionStart,e=this.selectionEnd;
+        let Line = v.substring(0,s).split(String.fromCharCode(10)).pop();
+        let tabs = 0;
+        if(Line.charCodeAt(0)==10){
+        	Line=v.substr(1);
+        }
+        for(let i=0;i<=Line.length-1;i++){
+        	if(Line.charCodeAt(i)==9){
+            	tabs++;
+            }else{
+            	break;
+            }
+        }
+        this.value = `${v.substring(0,s)}${String.fromCharCode(10)}${tabs>0?String.fromCharCode(9).repeat(tabs):""}${v.substring(e,v.length)}`;
+        Event.preventDefault();
+        HighlightEvent();
+        this.setSelectionRange(s+(tabs+1),s+(tabs+1));
+   	}else{
+    	for(let p of AutoClosingPairs){
+        	if(Event.key==p.End){
+            	let s=this.selectionStart;
+        		let e=this.selectionEnd;
+                let v = this.value;
+                if (v.substr(s,1)==p.End){
+                	this.setSelectionRange(s+1,s+1);
+                	Event.preventDefault();
+                    break;
+                }
+            }
+        	if(Event.key==p.Start){
+            	let s=this.selectionStart;
+        		let e=this.selectionEnd;
+        		if(s!=e){
+        			let v = this.value;
+                    let x = v.substring(s,e).length;
+        			this.value = `${v.substring(0,s)}${p.Start}${v.substring(s,e)}${p.End}${v.substring(e,v.length)}`;
+                    this.setSelectionRange(s+p.Start.length+x,s+p.Start.length+x);
+        		}else {
+        			let v = this.value;
+            		this.value = `${v.substring(0,s)}${p.Start}${p.End}${v.substring(s,v.length)}`;
+            		this.setSelectionRange(s+p.Start.length,s+p.Start.length);
+        		}
+        		HighlightEvent();
+        		Event.preventDefault();
+                break;
+            }
+        }
+    }
     return true;
 }
 
-CodeBox.addEventListener("keydown",InsertTab);
-Clear.onmousedown = function(){
-	let child = Output.lastElementChild;  
-    while (child) {
-      Output.removeChild(child); 
-      child = Output.lastElementChild;
-    }
-    ObjectHandler.ClearElementChildren(ObjectHandler.ObjectLog);
-    HighlightPre.innerHTML="";
-}
-
-function NewElement(Tag,HTML,To,Style,Attr){
-	let el = document.createElement(Tag);
-    el.innerHTML=HTML;
-    To.appendChild(el);
-    if (Style){
-    	for (let k in Style){
-        	let v = Style[k];
-            el.style[k]=v;
-        }
-    }
-    if (Attr){
-    	for (let k in Attr){
-        	let v = Attr[k];
-            el[k]=v;
-        }
-    }
-    return el;
-}
-
-Library.Standard.Globals.log = function log(...args){
-	NewElement("p",`${args.reduce((a,b)=>a+String(b))}`,Output,{
-    	marginTop:0,
-        marginBottom:0,
-    });
-}
-
-Library.Standard.Globals.warn = function warn(...args){
-	NewElement("p",`<span style="color:#ff5621">WARNING: ${args.reduce((a,b)=>a+String(b))}</span><br>`,Output,{
-    	marginTop:0,
-        marginBottom:0,
-    });
-}
-
-Library.Standard.Globals.info = function info(...args){
-	NewElement("p",`<span style="color:#1a58ee">INFO: ${args.reduce((a,b)=>a+String(b))}</span><br>`,Output,{
-    	marginTop:0,
-        marginBottom:0,
-    });
-}
-
-Library.Standard.Globals.clog = function clog(color,...args){
-	NewElement("p",`<span style="color:${color}">INFO: ${args.reduce((a,b)=>a+String(b))}</span><br>`,Output,{
-    	marginTop:0,
-        marginBottom:0,
-    });
-}
-
-Library.Standard.Globals.require = function require(name){
-	if (Requires.hasOwnProperty(name)){
-    	return Requires[name];
-    }
-    let Save = SaveObject[name];
-    if (!Save){
-    	throw new CodeError(`Attempt to require an invalid script "${name}"`);
-    }
-    let Result = RunCode(Save.Code,name);
-    if (Result.GlobalSettings.type!="module"){
-    	throw new CodeError(`Attempt to require an invalid module "${name}"`);
-    }
-    Requires[name]=Result.GlobalSettings.exports;
-    return Result.GlobalSettings.exports;
-}
-
-Library.Standard.Globals.clearrequires = function clearrequires(){
-	for(let k in Requires){
-    	delete Requires[k];
-    }
-}
-
-Library.Standard.AddGlobal("quickcall",function(f,a){
-	let n = [];
-    for(let k in a){
-    	let v = a[k];
-        let r;
-        if (v instanceof Array){
-        	r = f(v);
-        } else {
-        	r = f(v);
-        }
-    	n[k]=r;
-    }
-    return n;
+Settings.Editor.addEventListener("keydown",InsertTab);
+Settings.Editor.addEventListener("scroll",()=>{
+	let h = Settings.Highlighted;
+    let e = Settings.Editor;
+    let c = Settings.CursorPos;
+	h.scrollTop = e.scrollTop;
+    h.scrollLeft = e.scrollLeft;
+    c.scrollTop=h.scrollTop;
+    c.scrollLeft=h.scrollLeft;
+    UpdateScroll()
 });
 
-for(let k in NewGlobals){
-	Library.Standard.AddGlobal(k,NewGlobals[k]);
+setInterval(UpdateScroll,500);
+
+//{{ Cursor Position }}\\
+
+const RetChars = ["\n","\r"];
+
+const ShowMarker = (Event)=>{
+	const Target = Event.target;
+    let v = Target.value;
+    let ss=Target.selectionStart;
+   	let s = v.substring(0,ss).length;
+    const e = Settings.Editor;
+    const c = Settings.CursorPos;
+    let Text = "｜";
+    let char = v.charAt(s-1);
+    if (RetChars.includes(char)){
+    	Text=`${char}${Text}`;
+    }
+    if(char=="\t"){
+    	Text=`\t${Text}`
+    }
+    c.innerHTML = e.value.replace(/\S/g," ").replaceCharAt(s-1,Text);
 }
 
-const XBSLibSettings = {
+const HideMarker = ()=>{
+	const e = Settings.Editor;
+    const c = Settings.CursorPos;
+    c.innerHTML = "";
+}
+
+let ToggleValue = true;
+let ToggleInterval = undefined;
+
+const ToggleMarker=()=>{
+	const c = Settings.CursorPos;
+    ToggleValue=!ToggleValue;
+    c.style.opacity = ToggleValue?1:0;
+}
+
+Settings.Editor.addEventListener("mousedown",ShowMarker);
+Settings.Editor.addEventListener("focus",e=>{
+	ShowMarker(e);
+    ToggleInterval = setInterval(ToggleMarker,500)
+});
+Settings.Editor.addEventListener("input",ShowMarker);
+Settings.Editor.addEventListener("keydown",ShowMarker);
+Settings.Editor.addEventListener("keyup",ShowMarker);
+Settings.Editor.addEventListener("keypress",ShowMarker);
+Settings.Editor.addEventListener("blur",()=>{
+	HideMarker();
+    clearInterval(ToggleInterval);
+});
+
+//{{ Action Button Setup }}\\
+
+const RawButtons = {"run-button":"Run","clear-output":"ClearOutput","clear-button":"Clear","save-code":"SaveCode","save-name":"SaveName"};
+const Buttons = {};
+for(let k in RawButtons){
+	let v = RawButtons[k];
+    Buttons[v]=GetElement(k);
+}
+delete RawButtons;
+
+//{{ Action Buttons }}\\
+
+Buttons.Run.addEventListener("mousedown",()=>{
+	Settings.XBS.Run(Settings.Editor.value);
+});
+
+Buttons.ClearOutput.addEventListener("mousedown",()=>{
+	Settings.ClearElementChildren(Settings.Output);
+    ObjectHandler.ClearElementChildren(ObjectHandler.ObjectLog);
+});
+
+Buttons.Clear.addEventListener("mousedown",()=>{
+	if(confirm("Are you sure that you want to clear the existing code?")){
+    	Settings.Editor.value = "";
+        HighlightEvent();
+        Buttons.SaveName.value = "";
+    }
+});
+
+Buttons.SaveCode.addEventListener("mousedown",()=>{
+	let Name = Buttons.SaveName.value;
+    let Code = Settings.Editor.value;
+    Settings.NewSave(Name,Code);
+});
+
+//{{ XBS Settings }}\\
+
+Settings.XBSLibrarySettings = {
 	ASTVariable:false,
     DeprecatedCallback:Library.Standard.Globals.warn,
-    DeprecatedCalls:["ucall","rnd"],
+    DeprecatedCalls:["ucall","rnd","clog"],
+    WarnCalls:["delay","table"],
 };
 
-function RunCode(Code,Name="XBS"){
+Settings.ClearElementChildren = function(e){
+	let c = e.lastChild;
+    while(c){
+    	c.remove();
+        c=e.lastChild;
+    }
+}
+
+Settings.XBS = {};
+Settings.XBS.Run = function(Code,Name="XBS"){
 	try {
-    	let Lib = {};
+    	//Library Setup
+    	const ProxyLibrary = {};
         for(let k in Library.Standard.Globals){
-        	Lib[k]=Library.Standard.Globals[k];
+        	let v = Library.Standard.Globals[k];
+            ProxyLibrary[k]=v;
         }
-        Lib.env = Lib;
-        let Result = XBS.Run(Code,Library.New(Lib,XBSLibSettings));
+        ProxyLibrary.env = ProxyLibrary;
+        //Run Code
+		let Result = XBS.Run(Code,Library.New(ProxyLibrary,Settings.XBSLibrarySettings));
         if (Result.GlobalSettings.objectlog == true){
         	ObjectHandler.LogObject(Result);
         }
     	return Result;
-    } catch(e){
-    	let er=e;
-    	e = String(e);
-        NewElement("p",`<span style="color:#ff243c">{${Name}}: ${er.stack}</span><br>`,Output,{
-        	marginTop:0,
-            marginBottom:0,
+    }catch(e){
+    	NewElement("p",Settings.Output,{
+        	innerHTML:ColorText(`${Name}: ${e.stack}`,"#ff486c"),
+            style:{
+            	marginTop:0,
+                marginBottom:0,
+            },
         });
-        return {}
     }
 }
 
-Execute.onmousedown = function(){
-	RunCode(CodeBox.value);
+//{{ Saving }}\\
+
+Settings.Requires = {};
+Settings.SaveStorage = new LocalStorage("XBSSaves");
+Settings.Saves = Settings.SaveStorage.GetItems();
+Settings.SaveHolder = GetElement("saves");
+Settings.SaveObjects = {};
+
+Settings.ClearRequires = function(){
+	for(let k in Settings.Requires){
+    	delete Settings.Requires[k];
+    }
 }
 
-//Saving
+Settings.NewSave = function(Name,Code){
+	if (!Name||Name==""||Name.match(/\s+/)==Name){return}
+    Settings.Saves[Name] = Code;
+    Settings.SaveStorage.SetItem(Name,Code);
+    Settings.NewSaveElement(Name);
+}
 
-function DeleteSave(Name){
-	if (SaveObject.hasOwnProperty(Name)){
-    	Saves.removeChild(SaveObject[Name].Element);
-    	delete SaveObject[Name];
-        LocalSaves.RemoveItem(Name);
-        if (Requires.hasOwnProperty(Name)){
-        	delete Requires[Name];
+Settings.DeleteSave = function(Name){
+	if(Settings.Saves.hasOwnProperty(Name)){
+    	delete Settings.Saves[Name];
+        Settings.SaveStorage.RemoveItem(Name);
+        if (Settings.Requires.hasOwnProperty(Name)){
+        	delete Settings.Requires[Name];
+        }
+        if (Settings.SaveObjects.hasOwnProperty(Name)){
+        	Settings.SaveObjects[Name].remove();
+            delete Settings.SaveObjects[Name];
         }
     }
 }
 
-function NewSave(Name,Code){
-	DeleteSave(Name);
-    const Save = {
-    	Element:undefined,
-        Code:Code,
+Settings.GetSave = function(Name){
+	return Settings.Saves[Name];
+}
+
+Settings.LoadSave = function(Name){
+	let Code = Settings.GetSave(Name);
+    if(!Code){return}
+    Settings.Editor.value = Code;
+    HighlightEvent();
+}
+
+//{{ Save Elements }}\\
+
+Settings.NewSaveElement = function(Name){
+	if(Settings.SaveObjects.hasOwnProperty(Name)){return}
+	let d = NewElement("div",Settings.SaveHolder,{className:"save"});
+    let n = NewElement("p",d,{className:"save-name",innerHTML:Name});
+    let del = NewElement("button",d,{className:"save-btn",innerHTML:"Delete"});
+    let load = NewElement("button",d,{className:"save-btn",innerHTML:"Load"});
+    load.addEventListener("mousedown",()=>{
+    	Settings.LoadSave(Name);
+    });
+    del.addEventListener("mousedown",()=>{
+    	Settings.DeleteSave(Name);
+    });
+    Settings.SaveObjects[Name]=d;
+}
+
+for(let k in Settings.Saves){
+	Settings.NewSaveElement(k);
+}
+
+//{{ Force-Close Prevention }}\\
+
+window.onbeforeunload = function(){
+	return "";
+}
+
+window.onbeforereload = function(){
+	return "";
+}
+
+//{{ Code Auto Complete }}\\
+
+((()=>{
+	let PreviousText = "",Enabled=false,SelectionPoint=0,EscapedWord="";
+    const Editor = Settings.Editor;
+    const EndSearches = [".","::","->"];
+    const XBSTypes = "string array object null boolean function any number".split(" ");
+    const Selections = [];
+    const SearchTerms = {
+    	"any":"type",
+        "boolean":"type",
+        "self":"?any",
+        "construct":"?function",
+        "true":"boolean",
+        "false":"boolean",
+        "null":"null",
+        "function":"type",
+        "@type":"string:module",
+        "@exports":"?any",
+        "super":"keyword",
+    };
+    const AMethods=["add","sub","div","mod","pow","mul","fdiv","index","setindex","tostring"];
+    for(let v of AMethods){
+    	SearchTerms["__"+v]="?function";
     }
-    LocalSaves.SetItem(Name,Code);
-    SaveObject[Name] = Save;
-    let Div = NewElement("div","",Saves,undefined,{
-    	className:"save",
-    });
-    Save.Element=Div;
-    let Span = NewElement("span",Name,Div);
-    let Load = NewElement("button","Load",Div,undefined,{
-    	className:"savebtn"
-    });
-    let Delete = NewElement("button","Delete",Div,undefined,{
-    	className:"savebtn"
-    });
-    Load.addEventListener("mousedown",()=>{
-    	CodeBox.value = SaveObject[Name].Code;
-        SaveName.value = Name;
-    });
-    Delete.addEventListener("mousedown",()=>{
-    	DeleteSave(Name);
-    });
-}
-
-const LoadedSaves = LocalSaves.GetItems();
-
-for (let k in LoadedSaves){
-	let v = LoadedSaves[k];
-    NewSave(k,v);
-}
-
-SaveCode.addEventListener("mousedown",()=>{
-	if (CodeBox.value == "" || SaveName.Value == ""){return}
-    if (SaveName.value.match(/\s+/g) == SaveName.value){return};
-	NewSave(SaveName.value,CodeBox.value);
-});
-
-ClearButton.addEventListener("mousedown",()=>{
-	SaveName.value="";
-    CodeBox.value="";
-});
-
-//{{ Syntax Highlighting for code examples }}\\
-
-const CodeExamples = document.querySelectorAll(`pre[class="codeblock-big"]`);
-const HighlightColors = {
-	"Keyword":"#2d6cfa",
-    "Globals":"#ff2a48",
-    "Bools":"#ed7f15",
-    "Operators":"#5c9e23",
-}
-const Highlights = {
-	"Keyword":["set","func","stop","send","using","while","for","foreach","isa","class","extends","with","new","destruct","if","elif","else","in","as","of","del","swap","unset","switch","case","def","repeat","settype","chunk","try","catch","finally","exclude","istype","doerror"],
-    "Globals":[],
-    "Bools":["true","false","null"],
-}
-
-for(let k in Library.Standard.Globals){
-	Highlights.Globals.push(k);
-}
-
-const ColorWord = (w,c)=>`<span style='color:${c};'>${w}</span>`;
-
-const Highlight = (Element)=>{
-	let Text = Element.innerHTML;
-    Text = Text.replace(/(?<!\w+)((0(x[A-Fa-f0-9]+|(b[0-1]+))|([0-9]+(\.[0-9]+)?(e[\+\-]?[0-9]+)?)))(?!\w+)/g,ColorWord("$&","#ffaf21"));
-    Text = Text.replace(/(\".*?\")/sg,ColorWord("$&","#de7f2a"));
-    Text = Text.replace(/(\@\w+)/g,ColorWord("$&","#7f2cde"));
-    Text = Text.replace(/(?<!\<)(\+|-\|\*|\/|\^|\%|\?)/g,ColorWord("$&",HighlightColors.Operators))
-    Text = Text.replace(/((?<=(\(|\,|\;|\{|\[))\w+?(?=(\,|\;|\)|\:\w+?|\}|\]|\=)))+/g,ColorWord("$&","#2f49de"));
-    Text = Text.replace(/(?<=\:)(\w+)(?=\s*[\=\,\)\;\{\}])/g,ColorWord("$&","#348fff"));
-    Text = Text.replace(/(?<=(\.|\:\:|\-\&gt;))\w+(?![0-9]+)/g,ColorWord("$&","#8f30ed"));
-    Text = Text.replace(/((?<=(set|using|func|class)\s+)\w+)/g,ColorWord("$&","#2f49de"));
-    Text = Text.replace(/\#\&gt\;(.*?)\&lt\;\#/gsm,ColorWord("$&","#8f8f9f"));
-    Text = Text.replace(/(?<!\:)(\#.*)/g,ColorWord("$&","#8f8f9f"));
-    for(let k in Highlights){
-    	let v = Highlights[k];
-        let c = HighlightColors[k];
-        let str = v.join("|");
-        Text = Text.replace(new RegExp(`(?<!\>)(\\b(${str})\\b)(?!\<)`,"g"),ColorWord("$&",c));
+    for(let k in Keywords){
+    	let v = Keywords[k];
+        SearchTerms[v]="keyword";
     }
-    Element.innerHTML = Text;
-}
-
-CodeExamples.forEach(x=>Highlight(x));
-
-HighlightBtn.addEventListener("mousedown",()=>{
-	HighlightPre.innerHTML = CodeBox.value.replace(/[\>\<]/g,function(x){
-    	if (x==">"){return "&gt;"};
-        if (x=="<"){return "&lt;"};
+    const MainDiv = GetElement("code-complete");
+    const KeyCodes = {
+    	Tab:9,
+        Enter:13,
+        DownArrow:40,
+        UpArrow:38,
+        Escape:27,
+    };
+    const IsSearchTerm=(o,n)=>{
+    	return SearchTerms.hasOwnProperty(n)&&o==Library.Standard.Globals;
+    }
+    const GetTypes=(o,n)=>{
+    	let types = [Interpreter.GetType(o[n])];
+        if(IsSearchTerm(o,n)){
+        	let t = SearchTerms[n];
+            types.shift();
+            types.push(t);
+        }
+        if(XBSTypes.includes(n)&&!types.includes("type")){
+        	types.push("type");
+        }
+        return types.join(",");
+    }
+    const ClearSelections=()=>{
+    	Settings.ClearElementChildren(MainDiv);
+        Selections.length = 0;
+    }
+    const UpdateSelection=()=>{
+    	for(let k in Selections){
+        	k=+k;
+            let v = Selections[k];
+            if(k==SelectionPoint){
+            	v.Element.className=`ccm-select ${v.Element.className.match("muted")?"muted":""}`;
+                v.Element.scrollIntoView();
+            }else{
+            	v.Element.className=`ccm-item ${v.Element.className.match("muted")?"muted":""}`;
+            }
+        }
+    }
+    const ChangeSP=Value=>{
+    	let Length = Selections.length;
+        SelectionPoint+=Value;
+        if (SelectionPoint > Length-1){
+        	SelectionPoint%=Length;
+        } else if (SelectionPoint < 0){
+        	while(SelectionPoint < 0){
+            	SelectionPoint = Length-(Math.abs(SelectionPoint));
+            }
+        }
+        UpdateSelection();
+    }
+    const SetCC = Value=>Settings.CodeComplete=Value;
+    const InverseCC = ()=>SetCC(!Settings.CodeComplete);
+    const MoveDiv = (x=0,y=0)=>{
+    	MainDiv.style.left=`${x}px`;
+        MainDiv.style.top=`${y}px`;
+    }
+    const Disable = ()=>{
+    	if(!Enabled){return}
+        Enabled = false;
+        SetCC(Enabled);
+        MainDiv.style.display="none";
+        SelectionPoint=0;
+        ClearSelections();
+    };
+    const Enable = ()=>{
+    	if(Enabled){return}
+        Enabled = true;
+        SetCC(Enabled);
+        MainDiv.style.display="block";
+        SelectionPoint=0;
+        EscapedWord="";
+        ClearSelections();
+    }
+    const CalculateTextSize = (Text,Size)=>{
+    	let s = 0;
+        for(let i=0;i<=Text.length-1;i++){
+        	let v = Text.charAt(i);
+            if(v=="\t"){
+            	s+=4;
+            }else{
+            	s++;
+            }
+        }
+        return s*Size;
+    }
+    const CodeComplete = Value=>{
+    	let {selectionStart:s,selectionEnd:e}=Editor;
+        let v = Value.substring(0,s);
+        let Word = v.match(/[A-Za-z0-9_@]+$/);
+        if (!Word){return Disable()}
+        Word = String(Word);
+        if(EscapedWord!=""&&Word.match(new RegExp(`^${EscapedWord}`))){return Disable()}
+        Enable();
+        MainDiv.innerHTML = Word;
+        ClearSelections();
+        let Matches = [];
+        let Search = Globals;
+        let SearchObject = Library.Standard.Globals;
+        let vv = v.substring(0,s-Word.length);
+        for(let en of EndSearches){
+        	if (vv.endsWith(en)){
+            	vv=vv.substr(0,vv.length-en.length);
+                let w = vv.match(/\w+$/);
+                if(!w){return Disable()}
+                w=String(w);
+                let g = Library.Standard.Globals[w];
+                if(!g){return Disable()}
+                if(typeof g!="object"&&!g){return Disable()}
+                Search = Object.getOwnPropertyNames(g);
+                SearchObject = g;
+                break;
+            }
+        }
+        if(SearchObject==Library.Standard.Globals){
+        	for(let key in SearchTerms){
+            	let term = SearchTerms[key];
+                let m = key.match(new RegExp(`^${Word}`));
+                if(m&&key.length>Word.length){
+                	Matches.push([key,key.length-Word.length]);
+                }
+            }
+        }
+        for(let g of Search){
+        	let m = g.match(new RegExp(`^${Word}`));
+            if(m&&g.length>Word.length){
+            	Matches.push([g,g.length-Word.length]);
+            }
+        }
+        if(Matches.length<=0){return Disable()}
+        Matches.sort((a,b)=>{
+        	let [c,d]=[a[1],b[1]];
+            if(c<d){return -1}
+            if(c>d){return 1}
+            return 0;
+        });
+        for(let m of Matches){
+        	let g = m[0];
+            let n = g;
+            let Types = GetTypes(SearchObject,g);
+            if (SearchObject==Library.Standard.Globals&&Settings.XBSLibrarySettings.DeprecatedCalls.includes(g)){
+            	n = `<strike>${n}</strike>`;
+            }
+            if(SearchObject==Library.Standard.Globals&&Settings.XBSLibrarySettings.WarnCalls.includes(g)){
+            	n = ColorText(n,Settings.Colors.Keyword);
+            }
+            if(g.match(/^@/)){
+            	n = ColorText(n,Settings.Colors.SetIndex);
+            }
+        	let sel = NewElement("p",MainDiv,{
+            	className:"ccm-item",
+                innerHTML:`${n} ${ColorText(`&lt;${Types}&gt;`,Settings.Colors.Extras)}`,
+                style:{
+                	marginTop:"0",
+                    marginBottom:"0",
+                },
+            });
+            if(n!=g){
+            	sel.className="ccm-item muted";
+            }
+            Selections.push({
+            	Element:sel,
+                Word:g,
+            });
+        }
+        let ls = v.split(String.fromCharCode(10));
+        const {scrollHeight:sh,scrollWidth:sw,clientHeight:ch,clientWidth:cw,scrollTop:st,scrollLeft:sl}=Editor;
+        //Fix scroll height & width
+        let ly = ((ls.length+1)*15.5)-(st);
+        let lx = CalculateTextSize(ls[ls.length-1],7)-(sl);
+        MoveDiv(lx+15,ly+24);
+        UpdateSelection();
+    }
+    Editor.addEventListener("blur",()=>{
+    	Disable();
     });
-    Highlight(HighlightPre);
-});
+    Editor.addEventListener("input",Event=>{
+    	if (Editor.value != PreviousText){
+        	PreviousText = Editor.value;
+            CodeComplete(PreviousText);
+        }
+    });
+    Editor.addEventListener("keydown",Event=>{
+    	if(!Enabled){return}
+    	let KeyCode = Event.which??Event.keyCode;
+        if (KeyCode==KeyCodes.DownArrow){
+        	ChangeSP(1);
+            Event.preventDefault();
+        } else if (KeyCode==KeyCodes.UpArrow){
+        	ChangeSP(-1);
+            Event.preventDefault();
+        } else if (KeyCode==KeyCodes.Escape||KeyCode==KeyCodes.Enter){
+        	let {selectionStart:s,selectionEnd:e}=Editor;
+        	let v = Editor.value.substring(0,s);
+        	let Word = v.match(/[A-Za-z0-9_@]+$/);
+            if(Word){
+            	EscapedWord=Word;
+            }
+        	Disable();
+            Event.preventDefault();
+        } else if (KeyCode == KeyCodes.Tab){
+        	let {selectionStart:s,selectionEnd:e,value:v}=Editor;
+            let vv = v.substring(0,s);
+            let SelWord = Selections[SelectionPoint].Word;
+            let Word = String(vv.match(/[A-Za-z0-9_@]+$/));
+            Editor.value = `${v.substring(0,s-Word.length)}${SelWord}${v.substring(e,v.length)}`;
+        	Disable();
+            Editor.setSelectionRange(s+((SelWord.length)-Word.length),s+((SelWord.length)-Word.length));
+        	Event.preventDefault();
+            HighlightEvent();
+            ShowMarker(Event);
+        }
+    });
+})());
 
 </script>
 </body>
