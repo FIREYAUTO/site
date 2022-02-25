@@ -4,6 +4,7 @@
 <script src="https://fireyauto.github.io/XBS/src.js"></script>
 <script src="https://fireyauto.github.io/XBS/extensions/canvas.js"></script>
 <script src="https://fireyauto.github.io/XBS/extensions/html.js"></script>
+<script src="https://fireyauto.github.io/XBS/library.js"></script>
 <style>
 body {
 	padding:0;
@@ -74,207 +75,15 @@ const ToOutput=(Text,Color)=>{
         },output);
 }
 
-const LibraryUtilities = {
-	ReadOnlyObject:function(Properties={}){
-		return new Proxy(Properties,{
-			get:function(self,Name){
-				return self[Name];	
-			},
-			set:function(){
-				return;
-			},
-		});
-	},
-};
-
-const Library = {
+const LibraryExtension = {
 	log:function(...a){ToOutput(JoinArray(a),"#000000")},
-    warn:function(...a){ToOutput(JoinArray(a),"#ff6f00")},
-    info:function(...a){ToOutput(JoinArray(a),"#1a58ee")},
-    error:function(a){throw Error(a)},
-    document:document,
-   	window:window,
-    console:console,
-    tostring:function(x){return String(x)},
-    toint:function(x){return parseInt(x)},
-    tofloat:function(x){return parseFloat(x)},
-    type:function(V){
-    	let T = typeof V;
-        if(V instanceof Array)return"array";
-        if(V===null||V===undefined)return"null";
-        return T;
-    },
-    string:LibraryUtilities.ReadOnlyObject({
-    	reverse:function(x){
-        	return x.split("").reverse().join("");
-        },
-        char:function(x){
-            return x.charCodeAt(0); 
-        },
-        byte:function(x){
-            return String.fromCharCode(x);
-        },
-        lower:function(x){
-            return x.toLowerCase();  
-        },
-        upper:function(x){
-            return x.toUpperCase();  
-        },
-        split:function(x,b){
-            return x.split(b||"");
-        },
-        at:function(x,b){
-            return x.charAt(b);
-        },
-		repeat:function(x,a){
-			return x.repeat(a);	
-		},
-        format:function(s,...a){
-        	let formats={
-            	"s":a=>String(a),
-                "q":a=>`"${String(a)}"`,
-                "a":a=>`'${String(a)}'`,
-                "l":a=>String(a).toLowerCase(),
-                "u":a=>String(a).toUpperCase(),
-            };
-            let i=0;
-            let F=[];
-            for(let k in formats)F.push(k);
-            return s.replace(new RegExp(`\\%(${F.join("|")})`,"g"),function(m,d){
-            	return formats[d](a[Math.min(i++,a.length-1)]);
-            });
-        }
-    }),
-    load:function(x="",g={}){
-        return XBS(x,g);
-    },
-    array:LibraryUtilities.ReadOnlyObject({
-    	find:function(a,x){
-        	return a.indexOf(x);
-        },
-        remove:function(a,x){
-        	a.splice(x,1);
-        },
-        insert:function(a,x,y){
-        	if (y==undefined){
-            	a.push(x);
-            } else {
-            	a.splice(x,0,y);
-            }
-        },
-	append:function(a,b){
-		a.push(b);	
-	},
-	prepend:function(a,b){
-		a.unshift(b);	
-	},
-	delete:function(a,b){
-		a.splice(a.indexOf(b),1);	
-	},
-        reverse:function(a){
-            return [...a].reverse();
-        },
-        join:function(a,b){
-            if (b==null||b==undefined){
-                b=", ";
-            }
-            return a.join(b);
-        },
-        sort:function(a,b){
-            return Array.prototype.sort.call(a,b);
-        },
-        has:function(a,b){
-            return a.includes(b);
-        },
-    }),
-    object:Object,
-    math:LibraryUtilities.ReadOnlyObject({
-        sin:function(x){
-            return Math.sin(x);
-        },
-        cos:function(x){
-            return Math.cos(x);
-        },
-        tan:function(x){
-            return Math.tan(x);
-        },
-        acos:function(x){
-            return Math.acos(x);
-        },
-        asin:function(x){
-            return Math.asin(x);
-        },
-        atan:function(x){
-            return Math.atan(x);
-        },
-        atan2:function(y,x){
-            return Math.atan2(y,x);
-        },
-        rad:function(x){
-            return x*(Math.PI/180);
-        },
-        deg:function(x){
-            return x*(180/Math.PI);
-        },
-        random:function(mi,ma){
-    	    return Math.floor(Math.random() * (ma-mi+1) + mi);
-        },
-        floor:function(x){
-            return Math.floor(x);
-        },
-        ceil:function(x){
-            return Math.ceil(x);
-        },
-        round:function(x){
-            return Math.round(x);
-        },
-        sqrt:function(x){
-            return Math.sqrt(x);
-        },
-        sqrt2:function(x,b=2){
-            return x**(1/b);
-        },
-        pow:function(x,y){
-            return Math.pow(x,y);
-        },
-        pi:Math.PI,
-        e:Math.E,
-        log:function(x){
-            return Math.log(x);
-        },
-        logb:function(x,b=10){
-            return Math.log10(x)/Math.log10(b);
-        },
-        log10:function(x){
-            return Math.log10(x);
-        },
-        nround:function(x,y=0){
-            let m = 10**y;
-            return Math.floor(x*m+0.5)/m;
-        },
-        abs:function(x){
-            return Math.abs(x);
-        }
-    }),
-    time:function(){
-    	return (Date.now()/1000);
-    },
-    delay:function(x,f,...a){
-        window.setTimeout(()=>{
-            f(...a);
-        },x*1000);
-    },
-    json:LibraryUtilities.ReadOnlyObject({
-        encode:function(x){
-            return JSON.stringify(x);
-        },
-        decode:function(x){
-            return JSON.parse(x);
-        },
-    }),
+	warn:function(...a){ToOutput(JoinArray(a),"#ff6f00")},
+	info:function(...a){ToOutput(JoinArray(a),"#1a58ee")},	
 }
 
-Library.env = Library;
+for(let Name in LibraryExtension){
+	Library[Name] = LibraryExtension[Name];	
+}
 
 //{{ Editor }}\\
 
@@ -381,7 +190,12 @@ const rc = document.getElementById("rc");
 const co = document.getElementById("co");
 
 rc.addEventListener("mousedown",()=>{
-	let r = XBS(code.value,Library);
+	let New = {};
+	for(let Name in Library){
+		New[Name]=Library[Name];
+	}
+	New.env = New;
+	let r = XBS(code.value,New);
     if(!r.Success){
     	ToOutput(r.Error,"#ff1234");
     }
