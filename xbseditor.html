@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -437,12 +438,14 @@ for(let k in XBS.Tokenizer.Tokens){
     }
 }
 
+Array.prototype.push.apply(Keywords,["private","undefined","method"]);
+
 const Globals = [];
 for(let k in Library){
 	Globals.push(k);
 }
 
-const Extras = ["self","construct","__add","__sub","__mul","__div","__mod","__pow","__index","__setindex","__unm","__floordiv","__tostring","super","private","undefined","method"];
+const Extras = ["self","construct","__add","__sub","__mul","__div","__mod","__pow","__index","__setindex","__unm","__floordiv","__tostring","super"];
 
 const Settings = {
 	Editor:GetElement("editor"),
@@ -457,10 +460,11 @@ const Settings = {
         String2:"#93dbff",
         EString:"#93dbff",
         TypeCall:"#ce97ff",
-    	Keyword:"#ff3a66",
         SetIndex:"#ce97ff",
         Number:"#63bbfe",
         Index:"#7dc5ff",
+        Const:"#51ff7f",
+        Keyword:"#ff3a66",
         GlobalSetting:"#ce97ff",
         Global:"#ffa645",
         Extras:"#ffc66c",
@@ -470,10 +474,6 @@ const Settings = {
         Brackets:"#cfcfcf",
     },
     Matches:{
-    	Keyword:{
-        	Match:`(\\b(${Keywords.join("|")})\\b)`,
-            Types:"g",
-        },
     	String:{
         	Match:`\\${"\"".toHTMLChar()}.*?\\${"\"".toHTMLChar()}`,
          	Types:"gs",
@@ -495,7 +495,7 @@ const Settings = {
             Types:"g",
         },
         Index:{
-        	Match:"(?<=\\w+\\s*\\.)\\w+",
+        	Match:"(?<=(\\w+|\\))\\s*\\.)\\w+",
             Types:"g",
         },
         TypeCall:{
@@ -536,6 +536,14 @@ const Settings = {
         },
         Call:{
         	Match:"(?<!\\.)\\w+(?=\\()",
+            Types:"g",
+        },
+        Keyword:{
+        	Match:`(\\b(${Keywords.join("|")})\\b)`,
+            Types:"g",
+        },
+        Const:{
+        	Match:"\\&lt\\;const\\&gt\\;",
             Types:"g",
         },
     },
