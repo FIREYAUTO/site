@@ -252,8 +252,8 @@ body {
 <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
 <!-- JS Libraries -->
 <script src="https://fireyauto.github.io/Javascript/Libraries/storage.js"></script>
-<script src="https://fireyauto.github.io/XBS/deprecated/languagetype.js"></script>
-<script src="https://fireyauto.github.io/XBS/deprecated/library.js"></script>
+<script src="https://fireyauto.github.io/XBS/src.js"></script>
+<script src="https://fireyauto.github.io/XBS/library.js"></script>
 </head>
 <body>
 <!-- HTML Elements -->
@@ -421,25 +421,25 @@ const NewGlobals = {
 };
 
 for(let k in NewGlobals){
-	Library.Standard.AddGlobal(k,NewGlobals[k]);
+	Library[k]=NewGlobals[k];
 }
 
 //{{ Settings }}\\
 
 const Keywords = [];
-for(let k in Lex.Tokens){
-	let v = Lex.Tokens[k];
+for(let k in XBS.Tokenizer.Tokens){
+	let v = XBS.Tokenizer.Tokens[k];
 	if(v.Type=="Keyword"){
-    	Keywords.push(v.Token);
+    	Keywords.push(v.Value);
     }
 }
 
 const Globals = [];
-for(let k in Library.Standard.Globals){
+for(let k in Library){
 	Globals.push(k);
 }
 
-const Extras = ["self","construct","__add","__sub","__mul","__div","__mod","__pow","__index","__setindex","__unm","__fdiv","__tostring","super"];
+const Extras = ["self","construct","__add","__sub","__mul","__div","__mod","__pow","__index","__setindex","__unm","__floordiv","__tostring","super","private","undefined","method"];
 
 const Settings = {
 	Editor:GetElement("editor"),
@@ -955,7 +955,7 @@ Buttons.SaveCode.addEventListener("mousedown",()=>{
 
 Settings.XBSLibrarySettings = {
 	ASTVariable:false,
-    DeprecatedCallback:Library.Standard.Globals.warn,
+    DeprecatedCallback:Library.warn,
     DeprecatedCalls:["ucall","rnd","clog"],
     WarnCalls:["delay","table"],
 };
@@ -973,13 +973,14 @@ Settings.XBS.Run = function(Code,Name="XBS"){
 	try {
     	//Library Setup
     	const ProxyLibrary = {};
-        for(let k in Library.Standard.Globals){
-        	let v = Library.Standard.Globals[k];
+        for(let k in Library){
+        	let v = Library[k];
             ProxyLibrary[k]=v;
         }
         ProxyLibrary.env = ProxyLibrary;
         //Run Code
-		let Result = XBS.Run(Code,Library.New(ProxyLibrary,Settings.XBSLibrarySettings));
+		let Result = XBS(Code,ProxyLibrary);
+        if(!Result.Success)throw Error(Result.Error);
         if (Result.GlobalSettings.objectlog == true){
         	ObjectHandler.LogObject(Result);
         }
@@ -1077,7 +1078,7 @@ window.onbeforereload = function(){
 ((()=>{
 	let PreviousText = "",Enabled=false,SelectionPoint=0,EscapedWord="";
     const Editor = Settings.Editor;
-    const EndSearches = [".","::","->"];
+    const EndSearches = [".","::"];
     const XBSTypes = "string array object null boolean function any number".split(" ");
     const Selections = [];
     const SearchTerms = {
@@ -1092,8 +1093,11 @@ window.onbeforereload = function(){
         "@type":"string:module",
         "@exports":"?any",
         "super":"keyword",
+        "private":"keyword",
+		"undefined":"keyword",
+       	"method":"keyword",
     };
-    const AMethods=["add","sub","div","mod","pow","mul","fdiv","index","setindex","tostring"];
+    const AMethods=["add","sub","div","mod","pow","mul","floordiv","index","setindex"];
     for(let v of AMethods){
     	SearchTerms["__"+v]="?function";
     }
@@ -1110,10 +1114,16 @@ window.onbeforereload = function(){
         Escape:27,
     };
     const IsSearchTerm=(o,n)=>{
-    	return SearchTerms.hasOwnProperty(n)&&o==Library.Standard.Globals;
+    	return SearchTerms.hasOwnProperty(n)&&o==Library;
+    }
+    const GetType=x=>{
+    	let t = typeof x;
+        if(t instanceof Array)return"array";
+        if(t===undefined||t===null)return"null";
+        return t;
     }
     const GetTypes=(o,n)=>{
-    	let types = [Interpreter.GetType(o[n])];
+    	let types = [GetType(o[n])];
         if(IsSearchTerm(o,n)){
         	let t = SearchTerms[n];
             types.shift();
@@ -1199,7 +1209,7 @@ window.onbeforereload = function(){
         ClearSelections();
         let Matches = [];
         let Search = Globals;
-        let SearchObject = Library.Standard.Globals;
+        let SearchObject = Library;
         let vv = v.substring(0,s-Word.length);
         for(let en of EndSearches){
         	if (vv.endsWith(en)){
@@ -1207,7 +1217,7 @@ window.onbeforereload = function(){
                 let w = vv.match(/\w+$/);
                 if(!w){return Disable()}
                 w=String(w);
-                let g = Library.Standard.Globals[w];
+                let g = Library[w];
                 if(!g){return Disable()}
                 if(typeof g!="object"&&!g){return Disable()}
                 Search = Object.getOwnPropertyNames(g);
@@ -1215,7 +1225,7 @@ window.onbeforereload = function(){
                 break;
             }
         }
-        if(SearchObject==Library.Standard.Globals){
+        if(SearchObject==Library){
         	for(let key in SearchTerms){
             	let term = SearchTerms[key];
                 let m = key.match(new RegExp(`^${Word}`));
@@ -1241,10 +1251,10 @@ window.onbeforereload = function(){
         	let g = m[0];
             let n = g;
             let Types = GetTypes(SearchObject,g);
-            if (SearchObject==Library.Standard.Globals&&Settings.XBSLibrarySettings.DeprecatedCalls.includes(g)){
+            if (SearchObject==Library&&Settings.XBSLibrarySettings.DeprecatedCalls.includes(g)){
             	n = `<strike>${n}</strike>`;
             }
-            if(SearchObject==Library.Standard.Globals&&Settings.XBSLibrarySettings.WarnCalls.includes(g)){
+            if(SearchObject==Library&&Settings.XBSLibrarySettings.WarnCalls.includes(g)){
             	n = ColorText(n,Settings.Colors.Keyword);
             }
             if(g.match(/^@/)){
