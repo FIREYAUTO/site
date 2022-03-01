@@ -460,7 +460,7 @@ const Settings = {
         String2:"#93dbff",
         EString:"#93dbff",
         TypeCall:"#ce97ff",
-        SetIndex:"#ce97ff",
+        Type:"#ce97ff",
         Number:"#63bbfe",
         Index:"#7dc5ff",
         Const:"#51ff7f",
@@ -499,11 +499,11 @@ const Settings = {
             Types:"g",
         },
         TypeCall:{
-        	Match:"(?<=\\w+\\s*(\\:{2}|\\-\\&gt;))\\w+",
+        	Match:"(?<=\\w+\\s*\\:{2})\\w+",
             Types:"g",
         },
-        SetIndex:{
-        	Match:"(?<=\\s*(?<!\\:)\\:)\\w+",
+        Type:{
+        	Match:"(?<=\\w+(\\&lt\\;const\\&gt\\;)*\\s*\\:\\s*)\\w+",
             Types:"g",
         },
         Global:{
