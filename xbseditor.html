@@ -1092,6 +1092,26 @@ window.onbeforereload = function(){
     const EndSearches = [".","::"];
     const XBSTypes = "string array object null boolean function any number".split(" ");
     const Selections = [];
+    const Descriptions = {
+    	"log":"Logs the given text to the output",
+        "warn":"Logs the given text to the output in a yellowish-orange color",
+        "error":"Causes an error to happen with the given text",
+       	"info":"Logs the given text to the output in a blue color",
+        "construct":"Main method name for classes",
+        "time":"Returns the given time in seconds since the Unix Epoch",
+        "delay":"Waits a given amount of time then calls the given function",
+        "colorlog":"Logs the given text to the output with the given color",
+        "require":"Requires a saved file",
+        "rawget":"Gets the index in the provided object without calling any advanced object methods",
+        "rawset":"Sets the index in the provided object without calling any advanced object methods",
+   		"load":"Runs the given string as XBS code, returns the result object",
+        "type":"Returns the type of the provided argument",
+        "toint":"Turns the given argument into an integer (whole number)",
+        "tofloat":"Turns the given argument into a float",
+        "tostring":"Turns the given argument into a string",
+        "clearoutput":"Clears the output",
+        "clearrequires":"Clears the require cache",
+    }
     const SearchTerms = {
     	"any":"type",
         "boolean":"type",
@@ -1153,11 +1173,14 @@ window.onbeforereload = function(){
     	for(let k in Selections){
         	k=+k;
             let v = Selections[k];
+            let id = v.Element.querySelector(".item-desc")
             if(k==SelectionPoint){
             	v.Element.className=`ccm-select ${v.Element.className.match("muted")?"muted":""}`;
                 v.Element.scrollIntoView();
+                if(id)id.style.display="block";
             }else{
             	v.Element.className=`ccm-item ${v.Element.className.match("muted")?"muted":""}`;
+               	if(id)id.style.display="none";
             }
         }
     }
@@ -1279,6 +1302,19 @@ window.onbeforereload = function(){
                     marginBottom:"0",
                 },
             });
+            if(Descriptions.hasOwnProperty(g)&&SearchObject==Library){
+            	NewElement("span",sel,{
+            		innerHTML:Descriptions[g],
+                   	className:"item-desc",
+            		style:{
+                		background:"#6d6d6d",
+                    	color:"#dfdfdf",
+                        width:"100%",
+                        height:"auto",
+                        display:"block",
+                	}
+            	});
+           	}
             if(n!=g){
             	sel.className="ccm-item muted";
             }
