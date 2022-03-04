@@ -459,6 +459,7 @@ const Settings = {
         String:"#93dbff",
         String2:"#93dbff",
         EString:"#93dbff",
+        Boolean:"#51ff7f",
         TypeCall:"#ce97ff",
         Type:"#ce97ff",
         Number:"#63bbfe",
@@ -467,8 +468,7 @@ const Settings = {
         Keyword:"#ff3a66",
         GlobalSetting:"#ce97ff",
         Global:"#ffa645",
-        Extras:"#ffc66c",
-        Boolean:"#51ff7f",
+        Extras:"#ffd56c",
         Call:"#ce97ff",
         Operator:"#ff6295",
         Brackets:"#cfcfcf",
@@ -487,7 +487,7 @@ const Settings = {
          	Types:"gs",
         },
         Number:{
-        	Match:"(?<!\\w+)((0(x[A-Fa-f0-9]+|(b[0-1]+))|(\\.[0-9]+(e[\\+\\-]?[0-9]+)?)|([0-9]+(\\.[0-9]+)?(e[\\+\\-]?[0-9]+)?)))(?!\\w+)",
+        	Match:"(?<!\\w+)((0(x[A-Fa-f0-9]+|(b[0-1]+))|((?<!\\.)\\.[0-9]+(e[\\+\\-]?[0-9]+)?)|([0-9]+(\\.[0-9]+)?(e[\\+\\-]?[0-9]+)?)))(?!\\w+)",
             Types:"g",
         },
         Boolean:{
@@ -495,7 +495,7 @@ const Settings = {
             Types:"g",
         },
         Index:{
-        	Match:"(?<=\\s*\\.)\\w+",
+        	Match:"(?<=\\s*(?<!\\.)\\.)\\w+",
             Types:"g",
         },
         TypeCall:{
