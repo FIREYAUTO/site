@@ -487,7 +487,7 @@ const Settings = {
          	Types:"gs",
         },
         Number:{
-        	Match:"(?<!\\w+)((0(x[A-Fa-f0-9]+|(b[0-1]+))|([0-9]+(\\.[0-9]+)?(e[\\+\\-]?[0-9]+)?)))(?!\\w+)",
+        	Match:"(?<!\\w+)((0(x[A-Fa-f0-9]+|(b[0-1]+))|(\\.[0-9]+(e[\\+\\-]?[0-9]+)?)|([0-9]+(\\.[0-9]+)?(e[\\+\\-]?[0-9]+)?)))(?!\\w+)",
             Types:"g",
         },
         Boolean:{
@@ -495,7 +495,7 @@ const Settings = {
             Types:"g",
         },
         Index:{
-        	Match:"(?<=(\\w+|\\))\\s*\\.)\\w+",
+        	Match:"(?<=\\s*\\.)\\w+",
             Types:"g",
         },
         TypeCall:{
@@ -507,11 +507,11 @@ const Settings = {
             Types:"g",
         },
         Global:{
-        	Match:`(?<!(\\.|\\:{1,2}|\\-\\&lt;))\\b(${Globals.join("|")})\\b`,
+        	Match:`(?<!(\\.|\\:{1,2}))\\b(${Globals.join("|")})\\b`,
             Types:"g",
         },
         Extras:{
-        	Match:`(?<!(\\.|\\:{1,2}|\\-\\&lt;))(${Extras.join("|")})`,
+        	Match:`(?<!(\\.|\\:{1,2}))\\b(${Extras.join("|")})\\b`,
             Types:"g",
         },
         Comment:{
@@ -535,7 +535,7 @@ const Settings = {
             Types:"g",
         },
         Call:{
-        	Match:"(?<!\\.)\\w+(?=\\()",
+        	Match:"(?<!\\.\\s*)\\w+(?=\\()",
             Types:"g",
         },
         Keyword:{
@@ -1128,7 +1128,7 @@ window.onbeforereload = function(){
 		"undefined":"keyword",
        	"method":"keyword",
     };
-    const AMethods=["add","sub","div","mod","pow","mul","floordiv","index","setindex"];
+    const AMethods=["add","sub","div","mod","pow","mul","floordiv","index","setindex","percentof","eq","lt","leq","neg"];
     for(let v of AMethods){
     	SearchTerms["__"+v]="?function";
     }
