@@ -560,6 +560,7 @@ const ObjectHandler = {
         Function:Settings.Colors.SetIndex,//"#9f9f9f",
         FunctionName:Settings.Colors.Extras,//"#ffaf32",
         Cyclic:Settings.Colors.SetIndex,//"#7a36ef",
+        Data:Settings.Colors.Keyword,
     },
 	ClearElementChildren:function(Element){
     	let Child = Element.lastElementChild;  
@@ -607,7 +608,7 @@ const ObjectHandler = {
         } else if (t=="boolean"){
         	s = this.ColorWord(s,"Bool");
         } else if (t=="function"){
-        	s = this.ColorWord(`&lt;function: ${this.ColorWord(`<b>${v.name}</b>`,"FunctionName")}&gt;`,"Function");
+        	s = this.ColorWord(`&lt;${this.ColorWord("function","Data")}: ${this.ColorWord(`<b>${v.name}</b>`,"FunctionName")}&gt;`,"Function");
         }
         return s;
     },
