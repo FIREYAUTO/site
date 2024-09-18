@@ -26,6 +26,7 @@ body {
     tab-size:4;
     z-index:99;
 	color:#ffffff;
+	background:#000000;
 }
 input[type=button]{
 	background:#2f2f2f;
@@ -81,13 +82,13 @@ const ToOutput=(Text,Color)=>{
             style:{
             	marginTop:"0",
                 marginBottom:"0",
-                color:Color
+                color:Color,
             },
         },output);
 }
 
 const LibraryExtension = {
-	log:function(...a){ToOutput(JoinArray(a),"#000000")},
+	log:function(...a){ToOutput(JoinArray(a),"#ffffff")},
 	warn:function(...a){ToOutput(JoinArray(a),"#ff6f00")},
 	info:function(...a){ToOutput(JoinArray(a),"#1a58ee")},	
 }
